@@ -1,0 +1,3 @@
+- [x] Redesign `frontend/src/pages/Landing/Landing.jsx` with light theme, deep blues, and zero comments
+- [x] Build the frontend to verify there are no compilation or syntax errors
+- [x] Verify page rendering and visual elements
