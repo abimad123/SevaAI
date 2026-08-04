@@ -1,18 +1,20 @@
 import { useState, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { sendMessage, fetchSessions, startNewSession, addOptimisticMessage, setLanguage } from '../../store/slices/chatSlice';
+import { updateProfile } from '../../store/slices/authSlice';
 import { Send, Sparkles, Plus, MessageSquare, ThumbsUp, ThumbsDown, Copy, BookOpen } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import toast from 'react-hot-toast';
 import { v4 as uuidv4 } from 'uuid';
+import { useTranslation } from 'react-i18next';
 
-const QUICK_PROMPTS = [
-  'What schemes are available for rural education NGOs?',
-  'How do I apply for FCRA registration?',
-  'Explain PMKVY scheme eligibility and benefits',
-  'What CSR funding opportunities exist for health NGOs?',
-  'Generate a compliance checklist for NGO registration',
-  'What documents are needed for Samagra Shiksha funding?',
+const QUICK_PROMPTS_KEYS = [
+  'chat.prompt_0',
+  'chat.prompt_1',
+  'chat.prompt_2',
+  'chat.prompt_3',
+  'chat.prompt_4',
+  'chat.prompt_5',
 ];
 
 export default function AIChat() {
@@ -24,9 +26,15 @@ export default function AIChat() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
+  const { t, i18n } = useTranslation();
 
-  useEffect(() => { dispatch(fetchSessions()); }, [dispatch]);
-  useEffect(() => { messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [messages]);
+  useEffect(() => {
+    dispatch(fetchSessions());
+  }, [dispatch]);
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
 
   const handleSend = async (text) => {
     const msg = text || input.trim();
@@ -44,7 +52,10 @@ export default function AIChat() {
   };
 
   const handleKeyDown = (e) => {
-    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); }
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSend();
+    }
   };
 
   const copyMessage = (content) => {
@@ -52,16 +63,24 @@ export default function AIChat() {
     toast.success('Copied to clipboard');
   };
 
+  const handleLocalLanguageChange = (l) => {
+    dispatch(setLanguage(l));
+    i18n.changeLanguage(l);
+    if (user) {
+      dispatch(updateProfile({ language: l }));
+    }
+  };
+
   return (
     <div className="h-[calc(100vh-112px)] flex gap-0 -m-6 rounded-2xl overflow-hidden shadow-sm border border-slate-200">
       <div className={`${sidebarOpen ? 'w-64' : 'w-0'} transition-all duration-300 overflow-hidden border-r border-slate-200 bg-white flex flex-col`}>
         <div className="p-4 border-b border-slate-200">
-          <button onClick={handleNewChat} className="btn-primary w-full justify-center text-sm py-2">
-            <Plus className="w-4 h-4" /> New Chat
+          <button onClick={handleNewChat} className="btn-primary w-full justify-center text-sm py-2" id="new-chat-btn">
+            <Plus className="w-4 h-4" /> {t('chat.new_chat')}
           </button>
         </div>
         <div className="flex-1 overflow-y-auto p-3 space-y-1">
-          <p className="text-xs text-slate-500 font-bold uppercase tracking-wider px-2 mb-2">Recent Chats</p>
+          <p className="text-xs text-slate-500 font-bold uppercase tracking-wider px-2 mb-2">{t('chat.recent_chats')}</p>
           {sessions.map((s) => (
             <button key={s.sessionId}
               onClick={() => setSessionId(s.sessionId)}
@@ -77,7 +96,7 @@ export default function AIChat() {
           {sessions.length === 0 && (
             <div className="text-center py-8">
               <MessageSquare className="w-8 h-8 text-slate-300 mx-auto mb-2" />
-              <p className="text-xs text-slate-500 font-semibold">No conversations yet</p>
+              <p className="text-xs text-slate-500 font-semibold">{t('chat.no_conversations')}</p>
             </div>
           )}
         </div>
@@ -86,7 +105,7 @@ export default function AIChat() {
       <div className="flex-1 flex flex-col bg-slate-50">
         <div className="h-14 flex items-center justify-between px-4 border-b border-slate-200 bg-white">
           <div className="flex items-center gap-3">
-            <button onClick={() => setSidebarOpen(!sidebarOpen)} className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-500 hover:text-slate-800">
+            <button onClick={() => setSidebarOpen(!sidebarOpen)} className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-500 hover:text-slate-800" id="chat-toggle-sidebar">
               <MessageSquare className="w-4 h-4" />
             </button>
             <div className="flex items-center gap-2">
@@ -94,7 +113,7 @@ export default function AIChat() {
                 <Sparkles className="w-3.5 h-3.5 text-white" />
               </div>
               <div>
-                <p className="text-sm font-bold text-slate-900 leading-tight">SevaAI Assistant</p>
+                <p className="text-sm font-bold text-slate-900 leading-tight">{t('chat.title')}</p>
                 <p className="text-xs text-emerald-700 flex items-center gap-1 font-semibold"><span className="w-1.5 h-1.5 rounded-full bg-emerald-600 inline-block animate-pulse" />Online</p>
               </div>
             </div>
@@ -102,7 +121,7 @@ export default function AIChat() {
           <div className="flex items-center gap-2">
             <div className="flex items-center gap-1 bg-slate-100 border border-slate-200 rounded-lg p-1">
               {['en', 'hi'].map((l) => (
-                <button key={l} onClick={() => dispatch(setLanguage(l))}
+                <button key={l} onClick={() => handleLocalLanguageChange(l)}
                   className={`px-3 py-1 rounded-md text-xs font-semibold transition-all ${language === l ? 'bg-blue-700 text-white shadow-sm' : 'text-slate-500 hover:text-slate-800'}`}>
                   {l === 'en' ? '🇬🇧 EN' : '🇮🇳 HI'}
                 </button>
@@ -117,16 +136,15 @@ export default function AIChat() {
               <div className="w-16 h-16 rounded-2xl bg-blue-700 flex items-center justify-center mb-4 shadow-md">
                 <Sparkles className="w-8 h-8 text-white" />
               </div>
-              <h2 className="text-2xl font-bold font-display text-slate-900 mb-2">SevaAI Assistant</h2>
+              <h2 className="text-2xl font-bold font-display text-slate-900 mb-2">{t('chat.title')}</h2>
               <p className="text-slate-600 text-sm mb-8 leading-relaxed font-semibold">
-                I'm your AI guide for India's NGO-Government ecosystem. Ask me about government schemes,
-                compliance requirements, funding opportunities, or get help with proposals.
+                {t('chat.desc')}
               </p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 w-full">
-                {QUICK_PROMPTS.map((p, i) => (
-                  <button key={i} onClick={() => handleSend(p)}
+                {QUICK_PROMPTS_KEYS.map((pKey, i) => (
+                  <button key={i} onClick={() => handleSend(t(pKey))}
                     className="p-3 rounded-xl bg-white border border-slate-200 text-left text-sm text-slate-600 hover:text-slate-900 hover:border-blue-500/40 hover:bg-slate-50/50 shadow-sm font-semibold transition-all">
-                    <span>{p}</span>
+                    <span>{t(pKey)}</span>
                   </button>
                 ))}
               </div>
@@ -159,7 +177,7 @@ export default function AIChat() {
                 {msg.role === 'assistant' && msg.sources?.length > 0 && (
                   <div className="w-full">
                     <p className="text-xs text-slate-500 mb-1 flex items-center gap-1 font-semibold">
-                      <BookOpen className="w-3 h-3" /> Sources ({msg.sources.length})
+                      <BookOpen className="w-3 h-3" /> {t('chat.sources')} ({msg.sources.length})
                     </p>
                     <div className="flex flex-wrap gap-1.5">
                       {msg.sources.map((src, si) => (
@@ -177,7 +195,7 @@ export default function AIChat() {
                   <div className="flex items-center gap-3 mt-1">
                     {msg.confidence && (
                       <span className="text-xs text-slate-500 font-semibold">
-                        Confidence: <span className={msg.confidence > 0.7 ? 'text-emerald-700' : 'text-amber-800'}>{Math.round(msg.confidence * 100)}%</span>
+                        {t('chat.confidence')}: <span className={msg.confidence > 0.7 ? 'text-emerald-700' : 'text-amber-800'}>{Math.round(msg.confidence * 100)}%</span>
                       </span>
                     )}
                     <div className="flex items-center gap-1">
@@ -217,7 +235,7 @@ export default function AIChat() {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder={language === 'hi' ? 'अपना प्रश्न यहाँ लिखें...' : 'Ask about government schemes, NGO compliance, funding opportunities...'}
+                placeholder={t('chat.placeholder')}
                 className="input-field resize-none min-h-12 max-h-36 py-3 pr-4 leading-relaxed font-semibold"
                 rows={1}
                 style={{ height: 'auto' }}
@@ -234,7 +252,7 @@ export default function AIChat() {
               <Send className="w-5 h-5" />
             </button>
           </div>
-          <p className="text-xs text-slate-500 text-center mt-2 font-medium">SevaAI uses RAG technology. Always verify critical information with official sources.</p>
+          <p className="text-xs text-slate-500 text-center mt-2 font-medium">{t('chat.disclaimer')}</p>
         </div>
       </div>
     </div>

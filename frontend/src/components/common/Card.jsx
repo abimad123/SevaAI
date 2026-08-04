@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next';
+
 export default function Card({ children, className = '', hover = false, glass = false }) {
   return (
     <div
@@ -14,6 +16,7 @@ export default function Card({ children, className = '', hover = false, glass = 
 }
 
 export function StatsCard({ label, value, icon: Icon, change, color = 'indigo', className = '' }) {
+  const { t } = useTranslation();
   const colors = {
     indigo: 'text-blue-700 bg-blue-50 border border-blue-100',
     emerald: 'text-emerald-700 bg-emerald-50 border border-emerald-100',
@@ -29,7 +32,7 @@ export function StatsCard({ label, value, icon: Icon, change, color = 'indigo', 
           <p className="text-2xl font-bold text-slate-900">{value}</p>
           {change !== undefined && (
             <p className={`text-xs mt-1 ${change >= 0 ? 'text-emerald-700 font-semibold' : 'text-red-600 font-semibold'}`}>
-              {change >= 0 ? '↑' : '↓'} {Math.abs(change)}% vs last month
+              {change >= 0 ? '↑' : '↓'} {Math.abs(change)}% {t('card.vs_last_month')}
             </p>
           )}
         </div>

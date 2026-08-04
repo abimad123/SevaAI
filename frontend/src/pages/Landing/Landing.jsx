@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Sparkles, ArrowRight, Users, Building2, Globe, Shield, BarChart3, MessageSquare, FileText, Lightbulb, ChevronRight, CheckCircle } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 const stats = [
   { label: 'Active NGOs Partnered', value: '2,400+' },
@@ -25,6 +26,8 @@ const stakeholders = [
 ];
 
 export default function Landing() {
+  const { t } = useTranslation();
+
   return (
     <div className="min-h-screen bg-slate-50 text-slate-800 antialiased font-sans">
       <nav className="fixed top-0 w-full z-50 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-sm">
@@ -36,13 +39,13 @@ export default function Landing() {
             <span className="font-bold text-xl font-display text-slate-900">SevaAI</span>
           </div>
           <div className="hidden md:flex items-center gap-8 text-sm text-slate-600 font-medium">
-            <a href="#features" className="hover:text-blue-700 transition-colors">Features</a>
-            <a href="#roles" className="hover:text-blue-700 transition-colors">Who We Serve</a>
-            <a href="#stats" className="hover:text-blue-700 transition-colors">Platform Impact</a>
+            <a href="#features" className="hover:text-blue-700 transition-colors">{t('landing.nav_features')}</a>
+            <a href="#roles" className="hover:text-blue-700 transition-colors">{t('landing.nav_roles')}</a>
+            <a href="#stats" className="hover:text-blue-700 transition-colors">{t('landing.nav_impact')}</a>
           </div>
           <div className="flex items-center gap-3">
-            <Link to="/login" className="text-slate-700 hover:text-slate-900 font-medium text-sm px-4 py-2 rounded-lg hover:bg-slate-100 transition-colors">Sign In</Link>
-            <Link to="/register" className="bg-blue-700 hover:bg-blue-800 text-white font-semibold text-sm px-5 py-2 rounded-lg shadow-sm transition-colors">Get Started</Link>
+            <Link to="/login" className="text-slate-700 hover:text-slate-900 font-medium text-sm px-4 py-2 rounded-lg hover:bg-slate-100 transition-colors">{t('landing.nav_signin')}</Link>
+            <Link to="/register" className="bg-blue-700 hover:bg-blue-800 text-white font-semibold text-sm px-5 py-2 rounded-lg shadow-sm transition-colors">{t('landing.cta_get_started')}</Link>
           </div>
         </div>
       </nav>
@@ -51,26 +54,24 @@ export default function Landing() {
         <div className="max-w-6xl mx-auto text-center">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-50 border border-blue-100 text-blue-800 text-sm font-semibold mb-8">
             <Sparkles className="w-4 h-4 text-blue-700" />
-            Civic Technology Platform for Verified Collaboration
+            {t('landing.hero_badge')}
           </div>
 
           <h1 className="text-4xl md:text-6xl font-extrabold font-display leading-tight text-slate-900 tracking-tight mb-6">
-            Connecting Civic Leaders with
-            <span className="block text-blue-700"> Government Intelligence</span>
+            {t('landing.hero_title')}
+            <span className="block text-blue-700">{t('landing.hero_title_span')}</span>
           </h1>
 
           <p className="text-lg md:text-xl text-slate-600 max-w-3xl mx-auto mb-10 leading-relaxed">
-            SevaAI bridges the gap between NGOs, government departments, and citizens.
-            Utilizing reliable database verification and AI systems to simplify scheme discovery,
-            compliance reporting, and social impact tracking.
+            {t('landing.hero_desc')}
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link to="/register" className="bg-blue-700 hover:bg-blue-800 text-white font-bold text-base px-8 py-3.5 rounded-lg shadow-md hover:shadow-lg transition-all flex items-center gap-2">
-              Start Free Account <ArrowRight className="w-5 h-5" />
+              {t('landing.cta_get_started')} <ArrowRight className="w-5 h-5" />
             </Link>
             <Link to="/schemes" className="border border-slate-300 text-slate-700 bg-white hover:bg-slate-50 font-semibold text-base px-8 py-3.5 rounded-lg shadow-sm transition-all flex items-center gap-2">
-              Browse Schemes <ChevronRight className="w-5 h-5" />
+              {t('landing.cta_browse_schemes')} <ChevronRight className="w-5 h-5" />
             </Link>
           </div>
 
@@ -86,29 +87,29 @@ export default function Landing() {
                 
                 <div className="p-6 grid grid-cols-1 md:grid-cols-3 gap-6 text-left">
                   <div className="space-y-1.5 md:border-r md:border-slate-200 md:pr-6">
-                    <div className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Navigation</div>
-                    <div className="px-3 py-2 rounded-lg text-sm bg-blue-50 text-blue-800 font-semibold">Dashboard Overview</div>
-                    <div className="px-3 py-2 rounded-lg text-sm text-slate-600 hover:bg-slate-50 font-medium">AI Chat Assistant</div>
-                    <div className="px-3 py-2 rounded-lg text-sm text-slate-600 hover:bg-slate-50 font-medium">Welfare Schemes</div>
-                    <div className="px-3 py-2 rounded-lg text-sm text-slate-600 hover:bg-slate-50 font-medium">Document Auditor</div>
-                    <div className="px-3 py-2 rounded-lg text-sm text-slate-600 hover:bg-slate-50 font-medium">Impact Reports</div>
+                    <div className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">{t('landing.dashboard_nav')}</div>
+                    <div className="px-3 py-2 rounded-lg text-sm bg-blue-50 text-blue-800 font-semibold">{t('landing.dashboard_overview')}</div>
+                    <div className="px-3 py-2 rounded-lg text-sm text-slate-600 hover:bg-slate-50 font-medium">{t('landing.dashboard_ai_chat')}</div>
+                    <div className="px-3 py-2 rounded-lg text-sm text-slate-600 hover:bg-slate-50 font-medium">{t('landing.dashboard_welfare')}</div>
+                    <div className="px-3 py-2 rounded-lg text-sm text-slate-600 hover:bg-slate-50 font-medium">{t('landing.dashboard_doc')}</div>
+                    <div className="px-3 py-2 rounded-lg text-sm text-slate-600 hover:bg-slate-50 font-medium">{t('landing.dashboard_impact')}</div>
                   </div>
                   
                   <div className="md:col-span-2 space-y-4">
                     <div className="bg-slate-50 rounded-xl p-4 border border-slate-200">
                       <div className="flex items-center justify-between mb-2">
-                        <span className="text-xs font-bold text-slate-500">AI Assistant Session</span>
-                        <span className="text-xs bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded font-medium">Verified Source</span>
+                        <span className="text-xs font-bold text-slate-500">{t('landing.ai_session')}</span>
+                        <span className="text-xs bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded font-medium">{t('landing.verified_source')}</span>
                       </div>
                       <div className="space-y-3">
                         <div className="bg-blue-600 text-white rounded-lg p-3 text-sm max-w-xs ml-auto shadow-sm">
-                          Is my educational NGO eligible for the Samagra Shiksha Abhiyan scheme?
+                          {t('landing.ai_user_msg')}
                         </div>
                         <div className="bg-white border border-slate-200 text-slate-700 rounded-lg p-3 text-sm max-w-md shadow-sm space-y-2">
-                          <p>Yes. Based on your registered profile, you meet the standard criteria. Samagra Shiksha supports educational infrastructure upgrades and teacher workshops.</p>
+                          <p>{t('landing.ai_resp_msg')}</p>
                           <div className="flex gap-2">
-                            <span className="text-xs bg-slate-100 text-slate-600 px-2 py-1 rounded border border-slate-200 font-medium">Sec. 4.2 Guidelines</span>
-                            <span className="text-xs bg-slate-100 text-slate-600 px-2 py-1 rounded border border-slate-200 font-medium">Ministry of Education</span>
+                            <span className="text-xs bg-slate-100 text-slate-600 px-2 py-1 rounded border border-slate-200 font-medium">{t('landing.sec_4_guidelines')}</span>
+                            <span className="text-xs bg-slate-100 text-slate-600 px-2 py-1 rounded border border-slate-200 font-medium">{t('landing.min_education')}</span>
                           </div>
                         </div>
                       </div>
@@ -116,11 +117,11 @@ export default function Landing() {
 
                     <div className="grid grid-cols-2 gap-4">
                       <div className="bg-slate-50 border border-slate-200 rounded-xl p-4">
-                        <p className="text-xs text-slate-500 font-medium uppercase tracking-wider">NGO Verification</p>
-                        <p className="text-2xl font-bold text-slate-900 mt-1">Active / Verified</p>
+                        <p className="text-xs text-slate-500 font-medium uppercase tracking-wider">{t('landing.ngo_verification')}</p>
+                        <p className="text-2xl font-bold text-slate-900 mt-1">{t('landing.ngo_verified')}</p>
                       </div>
                       <div className="bg-slate-50 border border-slate-200 rounded-xl p-4">
-                        <p className="text-xs text-slate-500 font-medium uppercase tracking-wider">Social Impact Rating</p>
+                        <p className="text-xs text-slate-500 font-medium uppercase tracking-wider">{t('landing.social_impact_rating')}</p>
                         <p className="text-2xl font-bold text-blue-700 mt-1">82 / 100</p>
                       </div>
                     </div>
@@ -137,7 +138,7 @@ export default function Landing() {
           {stats.map((s, i) => (
             <div key={i} className="text-center">
               <p className="text-3xl md:text-4xl font-extrabold text-blue-700 font-display">{s.value}</p>
-              <p className="text-slate-600 text-sm font-semibold mt-2">{s.label}</p>
+              <p className="text-slate-600 text-sm font-semibold mt-2">{t('landing.stat_label_' + i)}</p>
             </div>
           ))}
         </div>
@@ -147,10 +148,10 @@ export default function Landing() {
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight mb-4">
-              Integrated Operations for Maximum Social Impact
+              {t('landing.features_title')}
             </h2>
             <p className="text-slate-600 text-lg max-w-2xl mx-auto">
-              Professional administrative features tailored for transparent tracking, scheme discovery, and official reporting.
+              {t('landing.features_desc')}
             </p>
           </div>
           
@@ -160,8 +161,8 @@ export default function Landing() {
                 <div className="w-12 h-12 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center mb-4">
                   <f.icon className="w-6 h-6" />
                 </div>
-                <h3 className="text-lg font-bold text-slate-900 mb-2">{f.title}</h3>
-                <p className="text-slate-600 text-sm leading-relaxed">{f.desc}</p>
+                <h3 className="text-lg font-bold text-slate-900 mb-2">{t('landing.feature_title_' + i)}</h3>
+                <p className="text-slate-600 text-sm leading-relaxed">{t('landing.feature_desc_' + i)}</p>
               </div>
             ))}
           </div>
@@ -172,10 +173,10 @@ export default function Landing() {
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight mb-4">
-              Designed for Collaboration Across Key Sectors
+              {t('landing.roles_title')}
             </h2>
             <p className="text-slate-600 text-lg">
-              Empowering diverse roles with targeted dashboard interfaces, verified compliance checks, and databases.
+              {t('landing.roles_desc')}
             </p>
           </div>
           
@@ -185,8 +186,8 @@ export default function Landing() {
                 <div className="w-12 h-12 rounded-full bg-blue-700 flex items-center justify-center mb-4">
                   <r.icon className="w-6 h-6 text-white" />
                 </div>
-                <h3 className="text-lg font-bold text-slate-900 mb-2">{r.label}</h3>
-                <p className="text-slate-600 text-sm leading-relaxed">{r.desc}</p>
+                <h3 className="text-lg font-bold text-slate-900 mb-2">{t('landing.role_title_' + i)}</h3>
+                <p className="text-slate-600 text-sm leading-relaxed">{t('landing.role_desc_' + i)}</p>
               </div>
             ))}
           </div>
@@ -197,14 +198,14 @@ export default function Landing() {
         <div className="max-w-4xl mx-auto text-center">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-50 border border-emerald-100 text-emerald-800 text-sm font-semibold mb-6">
             <Shield className="w-4 h-4 text-emerald-700" />
-            Accountability & Compliance Standard
+            {t('landing.compliance_badge')}
           </div>
-          <h2 className="text-3xl font-extrabold text-slate-900 mb-6">Verified Information and Human Oversight</h2>
+          <h2 className="text-3xl font-extrabold text-slate-900 mb-6">{t('landing.compliance_title')}</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8">
-            {['Source Validation', 'Privacy Guards', 'Welfare Auditing', 'Regulatory Checks'].map((p, i) => (
-              <div key={i} className="bg-slate-50 rounded-xl p-4 border border-slate-200 flex flex-col items-center gap-2">
+            {[0, 1, 2, 3].map((idx) => (
+              <div key={idx} className="bg-slate-50 rounded-xl p-4 border border-slate-200 flex flex-col items-center gap-2">
                 <CheckCircle className="w-6 h-6 text-emerald-600" />
-                <span className="text-sm font-semibold text-slate-700">{p}</span>
+                <span className="text-sm font-semibold text-slate-700">{t('landing.compliance_item_' + idx)}</span>
               </div>
             ))}
           </div>
@@ -214,15 +215,15 @@ export default function Landing() {
       <section className="py-20 px-6 bg-slate-50 border-t border-slate-200">
         <div className="max-w-3xl mx-auto text-center bg-white border border-slate-200 rounded-3xl p-12 shadow-sm">
           <Sparkles className="w-12 h-12 text-blue-700 mx-auto mb-4" />
-          <h2 className="text-3xl font-extrabold text-slate-900 tracking-tight mb-4">Redesigning Social Service Infrastructure</h2>
+          <h2 className="text-3xl font-extrabold text-slate-900 tracking-tight mb-4">{t('landing.infra_title')}</h2>
           <p className="text-slate-600 mb-8 max-w-xl mx-auto leading-relaxed">
-            Register your organization to run scheme matching, prepare project designs, verify state clearances, and monitor funding statuses.
+            {t('landing.infra_desc')}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link to="/register" className="bg-blue-700 hover:bg-blue-800 text-white font-bold text-base px-8 py-3.5 rounded-lg shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2">
-              Create Account <ArrowRight className="w-5 h-5" />
+              {t('landing.infra_create')} <ArrowRight className="w-5 h-5" />
             </Link>
-            <Link to="/login" className="border border-slate-300 text-slate-700 bg-white hover:bg-slate-50 font-semibold text-base px-8 py-3.5 rounded-lg shadow-sm transition-all flex items-center justify-center">Sign In</Link>
+            <Link to="/login" className="border border-slate-300 text-slate-700 bg-white hover:bg-slate-50 font-semibold text-base px-8 py-3.5 rounded-lg shadow-sm transition-all flex items-center justify-center">{t('landing.infra_signin')}</Link>
           </div>
         </div>
       </section>
@@ -234,12 +235,12 @@ export default function Landing() {
               <Sparkles className="w-3.5 h-3.5 text-white" />
             </div>
             <span className="font-bold text-slate-900 font-display">SevaAI</span>
-            <span className="text-slate-500 text-sm ml-2">© 2024 — Verified Social Welfare Platform</span>
+            <span className="text-slate-500 text-sm ml-2">{t('landing.footer_rights')}</span>
           </div>
           <div className="flex items-center gap-6 text-sm text-slate-500 font-medium">
-            <a href="#" className="hover:text-blue-700 transition-colors">Privacy Statement</a>
-            <a href="#" className="hover:text-blue-700 transition-colors">Terms of Use</a>
-            <Link to="/schemes" className="hover:text-blue-700 transition-colors">Welfare Database</Link>
+            <a href="#" className="hover:text-blue-700 transition-colors">{t('landing.privacy')}</a>
+            <a href="#" className="hover:text-blue-700 transition-colors">{t('landing.terms')}</a>
+            <Link to="/schemes" className="hover:text-blue-700 transition-colors">{t('landing.welfare_db')}</Link>
           </div>
         </div>
       </footer>

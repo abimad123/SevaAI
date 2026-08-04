@@ -1,13 +1,14 @@
-import React, { Suspense, lazy } from 'react';
+import React, { Suspense, lazy, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { Provider } from 'react-redux';
+import { Provider, useDispatch, useSelector } from 'react-redux';
 import { Toaster } from 'react-hot-toast';
+import { useTranslation } from 'react-i18next';
 import store from './store';
 import PrivateRoute from './components/common/PrivateRoute';
 import DashboardLayout from './components/layout/DashboardLayout';
 import LoadingSpinner from './components/common/LoadingSpinner';
+import { setLanguage } from './store/slices/chatSlice';
 
-// Lazy-loaded pages
 const Landing = lazy(() => import('./pages/Landing/Landing'));
 const Login = lazy(() => import('./pages/Auth/Login'));
 const Register = lazy(() => import('./pages/Auth/Register'));
@@ -24,24 +25,36 @@ const Profile = lazy(() => import('./pages/Profile/Profile'));
 const NGOProfile = lazy(() => import('./pages/NGODashboard/NGOProfile'));
 const NotFound = lazy(() => import('./pages/NotFound'));
 
-const PageLoader = () => (
-  <div className="min-h-screen flex items-center justify-center" style={{ background: '#0f172a' }}>
-    <LoadingSpinner size="lg" message="Loading SevaAI..." />
-  </div>
-);
+const PageLoader = () => {
+  const { t } = useTranslation();
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-slate-50">
+      <LoadingSpinner size="lg" message={t('common.loading') || 'Loading SevaAI...'} />
+    </div>
+  );
+};
 
 function AppRoutes() {
+  const dispatch = useDispatch();
+  const { user } = useSelector((s) => s.auth);
+  const { i18n } = useTranslation();
+
+  useEffect(() => {
+    if (user && user.language) {
+      i18n.changeLanguage(user.language);
+      dispatch(setLanguage(user.language));
+    }
+  }, [user, i18n, dispatch]);
+
   return (
     <Suspense fallback={<PageLoader />}>
       <Routes>
-        {/* Public */}
         <Route path="/" element={<Landing />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/schemes" element={<SchemeSearch />} />
         <Route path="/schemes/:id" element={<SchemeDetail />} />
 
-        {/* Protected — Dashboard Layout */}
         <Route element={<PrivateRoute />}>
           <Route element={<DashboardLayout />}>
             <Route path="/dashboard" element={<Navigate to="/dashboard/ngo" replace />} />
@@ -71,7 +84,7 @@ export default function App() {
         <Toaster
           position="top-right"
           toastOptions={{
-            style: { background: '#1e293b', color: '#f1f5f9', border: '1px solid rgba(255,255,255,0.1)' },
+            style: { background: '#ffffff', color: '#0f172a', border: '1px solid #e2e8f0', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' },
             success: { iconTheme: { primary: '#10b981', secondary: '#fff' } },
             error: { iconTheme: { primary: '#ef4444', secondary: '#fff' } },
           }}

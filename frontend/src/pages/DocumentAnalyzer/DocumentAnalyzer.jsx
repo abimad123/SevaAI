@@ -4,6 +4,7 @@ import api from '../../services/api';
 import { Upload, FileText, Sparkles, CheckCircle, AlertTriangle, Info, X, RefreshCw } from 'lucide-react';
 import Badge from '../../components/common/Badge';
 import toast from 'react-hot-toast';
+import { useTranslation } from 'react-i18next';
 
 export default function DocumentAnalyzer() {
   const [files, setFiles] = useState([]);
@@ -12,14 +13,18 @@ export default function DocumentAnalyzer() {
   const [uploading, setUploading] = useState(false);
   const [dragging, setDragging] = useState(false);
   const [loadingDocs, setLoadingDocs] = useState(false);
+  const { t } = useTranslation();
 
   const loadDocuments = async () => {
     setLoadingDocs(true);
     try {
       const res = await api.get('/documents');
       setDocuments(res.data.data);
-    } catch { toast.error('Failed to load documents'); }
-    finally { setLoadingDocs(false); }
+    } catch {
+      toast.error('Failed to load documents');
+    } finally {
+      setLoadingDocs(false);
+    }
   };
 
   const handleDrop = useCallback((e) => {
@@ -62,7 +67,9 @@ export default function DocumentAnalyzer() {
     try {
       await api.post(`/documents/${docId}/analyze`);
       toast.success('AI analysis triggered. Refresh in a moment.');
-    } catch { toast.error('Failed to trigger analysis'); }
+    } catch {
+      toast.error('Failed to trigger analysis');
+    }
   };
 
   function guessType(name) {
@@ -77,11 +84,11 @@ export default function DocumentAnalyzer() {
     <div className="space-y-6 fade-in-up">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 font-display">AI Document Analyzer</h1>
-          <p className="text-slate-600 mt-1">Upload documents for AI-powered analysis, compliance check, and insights</p>
+          <h1 className="text-2xl font-bold text-slate-900 font-display">{t('doc.title')}</h1>
+          <p className="text-slate-600 mt-1">{t('doc.desc')}</p>
         </div>
-        <button onClick={loadDocuments} className="btn-secondary text-sm">
-          <RefreshCw className="w-4 h-4" /> Refresh
+        <button onClick={loadDocuments} className="btn-secondary text-sm" id="doc-refresh-btn">
+          <RefreshCw className="w-4 h-4" /> {t('doc.refresh')}
         </button>
       </div>
 
@@ -102,15 +109,15 @@ export default function DocumentAnalyzer() {
                 ${dragging ? 'bg-blue-700 shadow-md' : 'bg-slate-100 border border-slate-200'}`}>
                 <Upload className={`w-8 h-8 ${dragging ? 'text-white' : 'text-slate-400'}`} />
               </div>
-              <h3 className="text-lg font-bold text-slate-900 mb-1">{dragging ? 'Drop files here!' : 'Drag & Drop Files'}</h3>
-              <p className="text-slate-600 text-sm mb-1 font-semibold">or click to browse your device</p>
-              <p className="text-xs text-slate-500">Supports PDF, Word, Excel, TXT, Images • Max 10MB per file</p>
+              <h3 className="text-lg font-bold text-slate-900 mb-1">{dragging ? t('doc.drag_drop') : t('doc.drag_drop')}</h3>
+              <p className="text-slate-600 text-sm mb-1 font-semibold">{t('doc.browse')}</p>
+              <p className="text-xs text-slate-500">{t('doc.info')}</p>
             </div>
           </div>
 
           {files.length > 0 && (
             <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm space-y-2">
-              <p className="text-sm font-bold text-slate-900 mb-3">{files.length} file(s) ready to upload</p>
+              <p className="text-sm font-bold text-slate-900 mb-3">{files.length} {t('doc.ready')}</p>
               {files.map((f, i) => (
                 <div key={i} className="flex items-center gap-3 p-3 rounded-lg bg-slate-50 border border-slate-200">
                   <FileText className="w-4 h-4 text-blue-700 shrink-0" />
@@ -121,14 +128,14 @@ export default function DocumentAnalyzer() {
                   </button>
                 </div>
               ))}
-              <button onClick={handleUpload} disabled={uploading} className="btn-primary w-full justify-center mt-2 py-2.5">
+              <button onClick={handleUpload} disabled={uploading} className="btn-primary w-full justify-center mt-2 py-2.5" id="doc-upload-btn">
                 {uploading ? (
                   <span className="flex items-center gap-2">
                     <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                    Uploading & Analyzing...
+                    {t('doc.uploading')}
                   </span>
                 ) : (
-                  <span className="flex items-center gap-2"><Upload className="w-4 h-4" /> Upload & Analyze</span>
+                  <span className="flex items-center gap-2"><Upload className="w-4 h-4" /> {t('doc.upload_analyze')}</span>
                 )}
               </button>
             </div>
@@ -137,20 +144,14 @@ export default function DocumentAnalyzer() {
           <div className="bg-blue-50 border border-blue-200 rounded-xl p-5 shadow-sm">
             <div className="flex items-center gap-2 mb-3">
               <Sparkles className="w-5 h-5 text-blue-700" />
-              <h3 className="text-base font-bold text-slate-900">AI Analysis Includes</h3>
+              <h3 className="text-base font-bold text-slate-900">{t('doc.includes')}</h3>
             </div>
-            {[
-              { label: 'Document Summary', desc: 'Concise summary of key content' },
-              { label: 'Key Information Extraction', desc: 'Dates, amounts, names, IDs' },
-              { label: 'Missing Information', desc: "What's incomplete or absent" },
-              { label: 'Compliance Check', desc: 'Regulatory issues flagged' },
-              { label: 'Improvement Suggestions', desc: 'Actionable recommendations' },
-            ].map((item, i) => (
-              <div key={i} className="flex items-start gap-2 py-2 border-b border-slate-200 last:border-0">
+            {[0, 1, 2, 3, 4].map((idx) => (
+              <div key={idx} className="flex items-start gap-2 py-2 border-b border-slate-200 last:border-0">
                 <CheckCircle className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
                 <div>
-                  <p className="text-sm font-bold text-slate-950">{item.label}</p>
-                  <p className="text-xs text-slate-500 font-semibold">{item.desc}</p>
+                  <p className="text-sm font-bold text-slate-950">{t('doc.incl_title_' + idx)}</p>
+                  <p className="text-xs text-slate-500 font-semibold">{t('doc.incl_desc_' + idx)}</p>
                 </div>
               </div>
             ))}
@@ -163,16 +164,16 @@ export default function DocumentAnalyzer() {
           ) : (
             <div className="bg-white border border-slate-200 rounded-2xl p-8 shadow-sm text-center h-64 flex flex-col items-center justify-center">
               <Sparkles className="w-10 h-10 text-slate-300 mb-3" />
-              <p className="text-slate-600 font-medium">Upload a document and click on it to see AI analysis results</p>
+              <p className="text-slate-600 font-medium">{t('doc.placeholder_select')}</p>
             </div>
           )}
 
           <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm">
-            <h3 className="text-sm font-bold text-slate-900 mb-3">Your Documents</h3>
+            <h3 className="text-sm font-bold text-slate-900 mb-3">{t('doc.your_documents')}</h3>
             {loadingDocs ? (
               <div className="flex justify-center py-4"><div className="w-6 h-6 border-2 border-blue-600/30 border-t-blue-600 rounded-full animate-spin" /></div>
             ) : documents.length === 0 ? (
-              <p className="text-slate-500 text-sm text-center py-4 font-semibold">No documents uploaded yet</p>
+              <p className="text-slate-500 text-sm text-center py-4 font-semibold">{t('doc.no_documents')}</p>
             ) : (
               <div className="space-y-2">
                 {documents.map((doc) => (
@@ -185,9 +186,9 @@ export default function DocumentAnalyzer() {
                       <p className="text-xs text-slate-500 font-semibold">{new Date(doc.createdAt).toLocaleDateString('en-IN')}</p>
                     </div>
                     {doc.aiAnalysis?.isAnalyzed ? (
-                      <Badge variant="success" className="text-xs shrink-0">Analyzed</Badge>
+                      <Badge variant="success" className="text-xs shrink-0">{t('doc.status_analyzed')}</Badge>
                     ) : (
-                      <Badge variant="warning" className="text-xs shrink-0">Pending</Badge>
+                      <Badge variant="warning" className="text-xs shrink-0">{t('doc.status_pending')}</Badge>
                     )}
                   </button>
                 ))}
@@ -202,13 +203,14 @@ export default function DocumentAnalyzer() {
 
 function AnalysisPanel({ doc, onClose, onReanalyze }) {
   const a = doc.aiAnalysis;
+  const { t } = useTranslation();
   return (
     <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-md">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
           <Sparkles className="w-5 h-5 text-blue-700" />
-          <h3 className="text-base font-bold text-slate-900">AI Analysis</h3>
-          {a?.isAnalyzed && <Badge variant="success" className="text-xs">Complete</Badge>}
+          <h3 className="text-base font-bold text-slate-900">{t('doc.ai_analysis')}</h3>
+          {a?.isAnalyzed && <Badge variant="success" className="text-xs">{t('doc.complete')}</Badge>}
         </div>
         <div className="flex gap-2">
           <button onClick={() => onReanalyze(doc._id)} className="p-1.5 text-slate-400 hover:text-slate-800" title="Re-analyze">
@@ -220,25 +222,25 @@ function AnalysisPanel({ doc, onClose, onReanalyze }) {
 
       <h4 className="text-sm font-bold text-slate-950 mb-1 truncate">{doc.name}</h4>
       {a?.confidence !== undefined && (
-        <p className="text-xs text-slate-500 mb-4 font-semibold">Confidence: <span className={a.confidence > 0.6 ? 'text-emerald-700' : 'text-amber-800'}>{Math.round(a.confidence * 100)}%</span></p>
+        <p className="text-xs text-slate-500 mb-4 font-semibold">{t('doc.confidence')}: <span className={a.confidence > 0.6 ? 'text-emerald-700' : 'text-amber-800'}>{Math.round(a.confidence * 100)}%</span></p>
       )}
 
       {!a?.isAnalyzed ? (
         <div className="text-center py-6 text-slate-500 text-sm font-semibold">
           <div className="w-6 h-6 border-2 border-blue-600/30 border-t-blue-600 rounded-full animate-spin mx-auto mb-2" />
-          Analysis in progress...
+          {t('doc.in_progress')}
         </div>
       ) : (
         <div className="space-y-4 max-h-96 overflow-y-auto pr-1">
           {a.summary && (
             <section>
-              <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 flex items-center gap-1"><Info className="w-3.5 h-3.5" /> Summary</p>
+              <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 flex items-center gap-1"><Info className="w-3.5 h-3.5" /> {t('doc.summary')}</p>
               <p className="text-sm text-slate-700 leading-relaxed font-semibold">{a.summary}</p>
             </section>
           )}
           {a.keyInformation?.length > 0 && (
             <section>
-              <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 flex items-center gap-1"><CheckCircle className="w-3.5 h-3.5 text-emerald-600" /> Key Information</p>
+              <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 flex items-center gap-1"><CheckCircle className="w-3.5 h-3.5 text-emerald-600" /> {t('doc.key_info')}</p>
               <div className="space-y-1.5">
                 {a.keyInformation.map((item, i) => (
                   <div key={i} className="flex items-start gap-2 p-2 rounded-lg bg-slate-50 border border-slate-200">
@@ -251,7 +253,7 @@ function AnalysisPanel({ doc, onClose, onReanalyze }) {
           )}
           {a.missingInformation?.length > 0 && (
             <section>
-              <p className="text-xs font-bold text-amber-800 uppercase tracking-wider mb-2 flex items-center gap-1"><AlertTriangle className="w-3.5 h-3.5" /> Missing Information</p>
+              <p className="text-xs font-bold text-amber-800 uppercase tracking-wider mb-2 flex items-center gap-1"><AlertTriangle className="w-3.5 h-3.5" /> {t('doc.missing_info')}</p>
               <ul className="space-y-1">
                 {a.missingInformation.map((m, i) => <li key={i} className="text-xs text-slate-700 flex items-center gap-2 font-medium"><span className="w-1.5 h-1.5 rounded-full bg-amber-600" />{m}</li>)}
               </ul>
@@ -259,7 +261,7 @@ function AnalysisPanel({ doc, onClose, onReanalyze }) {
           )}
           {a.complianceIssues?.length > 0 && (
             <section>
-              <p className="text-xs font-bold text-red-800 uppercase tracking-wider mb-2 flex items-center gap-1"><AlertTriangle className="w-3.5 h-3.5" /> Compliance Issues</p>
+              <p className="text-xs font-bold text-red-800 uppercase tracking-wider mb-2 flex items-center gap-1"><AlertTriangle className="w-3.5 h-3.5" /> {t('doc.compliance')}</p>
               <ul className="space-y-1">
                 {a.complianceIssues.map((c, i) => <li key={i} className="text-xs text-red-800 flex items-center gap-2 font-medium"><span className="w-1.5 h-1.5 rounded-full bg-red-600" />{c}</li>)}
               </ul>
@@ -267,7 +269,7 @@ function AnalysisPanel({ doc, onClose, onReanalyze }) {
           )}
           {a.suggestions?.length > 0 && (
             <section>
-              <p className="text-xs font-bold text-emerald-800 uppercase tracking-wider mb-2">Suggestions</p>
+              <p className="text-xs font-bold text-emerald-800 uppercase tracking-wider mb-2">{t('doc.suggestions')}</p>
               <ul className="space-y-1.5">
                 {a.suggestions.map((s, i) => <li key={i} className="text-xs text-slate-700 flex items-start gap-2 font-semibold"><CheckCircle className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />{s}</li>)}
               </ul>

@@ -5,7 +5,8 @@ import { fetchMyNGO } from '../../store/slices/ngoSlice';
 import { BarChart3, FileText, MessageSquare, Lightbulb, Building2, Users, CheckCircle, Clock, TrendingUp, ArrowRight, Plus } from 'lucide-react';
 import { StatsCard } from '../../components/common/Card';
 import Badge from '../../components/common/Badge';
-import { AreaChart, Area, PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
+import { AreaChart, Area, PieChart, Pie, Cell, ResponsiveContainer, XAxis, YAxis, Tooltip } from 'recharts';
+import { useTranslation } from 'react-i18next';
 
 const monthlyData = [
   { month: 'Jan', beneficiaries: 120, budget: 150000 },
@@ -24,10 +25,19 @@ const focusData = [
 const COLORS = ['#1d4ed8', '#10b981', '#f59e0b', '#06b6d4'];
 const chartTooltipStyle = { backgroundColor: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '8px', color: '#0f172a' };
 
+const quickActionMap = {
+  'Ask AI Assistant': 'sidebar.ai_assistant',
+  'Upload Document': 'ngo.upload_doc',
+  'Generate Proposal': 'ngo.gen_proposal',
+  'View Analytics': 'ngo.view_analytics',
+  'Browse Schemes': 'ngo.browse_schemes'
+};
+
 export default function NGODashboard() {
   const dispatch = useDispatch();
   const { user } = useSelector((s) => s.auth);
   const { myNGO } = useSelector((s) => s.ngo);
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (user?.role === 'ngo_admin') dispatch(fetchMyNGO());
@@ -40,19 +50,19 @@ export default function NGODashboard() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-slate-900 font-display">
-            Welcome back, {user?.name?.split(' ')[0]} 👋
+            {t('common.welcome')}, {user?.name?.split(' ')[0]} 👋
           </h1>
           <p className="text-slate-500 mt-1">
-            {hasNGO ? `Managing ${myNGO.name}` : 'Complete your NGO profile to get started'}
+            {hasNGO ? `${t('ngo.manage')} ${myNGO.name}` : t('ngo.complete_profile')}
           </p>
         </div>
         <div className="flex items-center gap-3">
           <Link to="/chat" className="btn-primary text-sm">
-            <MessageSquare className="w-4 h-4" /> Ask AI Assistant
+            <MessageSquare className="w-4 h-4" /> {t('sidebar.ai_assistant')}
           </Link>
           {hasNGO && (
             <Link to="/proposal" className="btn-secondary text-sm">
-              <Lightbulb className="w-4 h-4" /> Generate Proposal
+              <Lightbulb className="w-4 h-4" /> {t('ngo.gen_proposal')}
             </Link>
           )}
         </div>
@@ -65,10 +75,10 @@ export default function NGODashboard() {
               <Building2 className="w-6 h-6 text-blue-700" />
             </div>
             <div className="flex-1">
-              <h3 className="text-lg font-semibold text-slate-900 mb-1">Register your NGO</h3>
-              <p className="text-slate-600 text-sm">Create your NGO profile to access AI scheme recommendations, project management, document storage and more.</p>
+              <h3 className="text-lg font-semibold text-slate-900 mb-1">{t('ngo.register_title')}</h3>
+              <p className="text-slate-600 text-sm">{t('ngo.register_desc')}</p>
               <Link to="/ngo/profile" className="btn-primary text-sm mt-4 inline-flex">
-                <Plus className="w-4 h-4" /> Create NGO Profile
+                <Plus className="w-4 h-4" /> {t('ngo.register_btn')}
               </Link>
             </div>
           </div>
@@ -76,15 +86,15 @@ export default function NGODashboard() {
       )}
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatsCard label="Beneficiaries Served" value="780" icon={Users} color="indigo" change={12} />
-        <StatsCard label="Active Projects" value="3" icon={CheckCircle} color="emerald" change={50} />
-        <StatsCard label="Budget Utilized" value="₹9L" icon={TrendingUp} color="amber" change={8} />
-        <StatsCard label="Impact Score" value="82/100" icon={BarChart3} color="violet" />
+        <StatsCard label={t('ngo.stats_beneficiaries')} value="780" icon={Users} color="indigo" change={12} />
+        <StatsCard label={t('ngo.stats_active_projects')} value="3" icon={CheckCircle} color="emerald" change={50} />
+        <StatsCard label={t('ngo.stats_budget')} value="₹9L" icon={TrendingUp} color="amber" change={8} />
+        <StatsCard label={t('ngo.stats_impact')} value="82/100" icon={BarChart3} color="violet" />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
-          <h3 className="text-lg font-semibold text-slate-900 mb-4">Monthly Beneficiaries Reached</h3>
+          <h3 className="text-lg font-semibold text-slate-900 mb-4">{t('ngo.monthly_chart')}</h3>
           <ResponsiveContainer width="100%" height={200}>
             <AreaChart data={monthlyData}>
               <defs>
@@ -102,7 +112,7 @@ export default function NGODashboard() {
         </div>
 
         <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
-          <h3 className="text-lg font-semibold text-slate-900 mb-4">Focus Areas</h3>
+          <h3 className="text-lg font-semibold text-slate-900 mb-4">{t('ngo.focus_areas')}</h3>
           <ResponsiveContainer width="100%" height={160}>
             <PieChart>
               <Pie data={focusData} cx="50%" cy="50%" innerRadius={40} outerRadius={70} paddingAngle={3} dataKey="value">
@@ -116,7 +126,7 @@ export default function NGODashboard() {
               <div key={i} className="flex items-center justify-between text-sm">
                 <div className="flex items-center gap-2">
                   <div className="w-3 h-3 rounded-full" style={{ background: COLORS[i] }} />
-                  <span className="text-slate-500 font-medium">{d.name}</span>
+                  <span className="text-slate-500 font-medium">{t('ngo.focus_area_' + d.name.toLowerCase())}</span>
                 </div>
                 <span className="text-slate-900 font-semibold">{d.value}%</span>
               </div>
@@ -128,9 +138,9 @@ export default function NGODashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-slate-900">Recent Projects</h3>
+            <h3 className="text-lg font-semibold text-slate-900">{t('ngo.recent_projects')}</h3>
             <Link to="/dashboard/ngo" className="text-sm text-blue-700 hover:text-blue-800 font-semibold flex items-center gap-1">
-              View all <ArrowRight className="w-3 h-3" />
+              {t('ngo.view_all')} <ArrowRight className="w-3 h-3" />
             </Link>
           </div>
           <div className="space-y-3">
@@ -157,7 +167,7 @@ export default function NGODashboard() {
         </div>
 
         <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
-          <h3 className="text-lg font-semibold text-slate-900 mb-4">Quick Actions</h3>
+          <h3 className="text-lg font-semibold text-slate-900 mb-4">{t('ngo.quick_actions')}</h3>
           <div className="space-y-3">
             {[
               { label: 'Ask AI Assistant', icon: MessageSquare, to: '/chat', color: 'text-blue-700 bg-blue-50' },
@@ -170,7 +180,7 @@ export default function NGODashboard() {
                 <div className={`p-2 rounded-lg ${a.color}`}>
                   <a.icon className="w-4 h-4" />
                 </div>
-                <span className="text-sm text-slate-600 font-medium group-hover:text-slate-900 transition-colors">{a.label}</span>
+                <span className="text-sm text-slate-600 font-medium group-hover:text-slate-900 transition-colors">{t(quickActionMap[a.label] || a.label)}</span>
                 <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-slate-600 ml-auto transition-colors" />
               </Link>
             ))}

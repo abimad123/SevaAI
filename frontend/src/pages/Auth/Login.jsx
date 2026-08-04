@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { login } from '../../store/slices/authSlice';
 import { Sparkles, Mail, Lock, ArrowRight, Eye, EyeOff } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { useTranslation } from 'react-i18next';
 
 const DEMO_ACCOUNTS = [
   { role: 'NGO Admin', email: 'ngo@sevaai.in', password: 'NGO@123', color: 'indigo' },
@@ -26,22 +27,30 @@ export default function Login() {
   const { loading, error } = useSelector((s) => s.auth);
   const [form, setForm] = useState({ email: '', password: '' });
   const [showPass, setShowPass] = useState(false);
+  const { t } = useTranslation();
+
+  const roleTranslation = {
+    'NGO Admin': t('roles.ngo_admin'),
+    'Govt Officer': t('roles.government_officer'),
+    'Citizen': t('roles.citizen'),
+    'System Admin': t('roles.system_admin'),
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     const result = await dispatch(login(form));
     if (login.fulfilled.match(result)) {
-      toast.success(`Welcome back, ${result.payload.user.name}!`);
+      toast.success(`${t('auth.welcome_toast')}, ${result.payload.user.name}!`);
       const redirect = ROLE_REDIRECTS[result.payload.user.role] || '/dashboard/ngo';
       navigate(redirect);
     } else {
-      toast.error(result.payload || 'Login failed');
+      toast.error(result.payload || t('auth.login_failed_toast'));
     }
   };
 
   const fillDemo = (acc) => {
     setForm({ email: acc.email, password: acc.password });
-    toast.success(`Demo credentials filled for ${acc.role}`);
+    toast.success(`${t('auth.demo_toast')} ${roleTranslation[acc.role] || acc.role}`);
   };
 
   return (
@@ -54,8 +63,8 @@ export default function Login() {
             </div>
             <span className="text-2xl font-bold font-display text-slate-900">SevaAI</span>
           </Link>
-          <h1 className="text-2xl font-bold text-slate-900 mt-2">Welcome back</h1>
-          <p className="text-slate-600 text-sm mt-1">Sign in to your SevaAI account</p>
+          <h1 className="text-2xl font-bold text-slate-900 mt-2">{t('auth.login_title')}</h1>
+          <p className="text-slate-600 text-sm mt-1">{t('auth.login_subtitle')}</p>
         </div>
 
         <div className="bg-white border border-slate-200 rounded-2xl p-8 shadow-md">
@@ -67,13 +76,13 @@ export default function Login() {
 
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
-              <label className="block text-sm font-semibold text-slate-700 mb-1.5">Email Address</label>
+              <label className="block text-sm font-semibold text-slate-700 mb-1.5">{t('auth.email_label')}</label>
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                 <input
                   type="email"
                   className="input-field pl-10"
-                  placeholder="you@organization.in"
+                  placeholder={t('auth.email_placeholder')}
                   value={form.email}
                   onChange={(e) => setForm({ ...form, email: e.target.value })}
                   required
@@ -83,13 +92,13 @@ export default function Login() {
             </div>
 
             <div>
-              <label className="block text-sm font-semibold text-slate-700 mb-1.5">Password</label>
+              <label className="block text-sm font-semibold text-slate-700 mb-1.5">{t('auth.password_label')}</label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                 <input
                   type={showPass ? 'text' : 'password'}
                   className="input-field pl-10 pr-10"
-                  placeholder="••••••••"
+                  placeholder={t('auth.password_placeholder')}
                   value={form.password}
                   onChange={(e) => setForm({ ...form, password: e.target.value })}
                   required
@@ -114,22 +123,22 @@ export default function Login() {
               {loading ? (
                 <span className="flex items-center gap-2">
                   <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  Signing in...
+                  {t('auth.signing_in')}
                 </span>
               ) : (
-                <span className="flex items-center gap-2">Sign In <ArrowRight className="w-4 h-4" /></span>
+                <span className="flex items-center gap-2">{t('auth.sign_in')} <ArrowRight className="w-4 h-4" /></span>
               )}
             </button>
           </form>
 
           <p className="text-center text-sm text-slate-600 mt-6 font-medium">
-            Don't have an account?{' '}
-            <Link to="/register" className="text-blue-700 hover:text-blue-800 font-bold">Create one free</Link>
+            {t('auth.no_account')}{' '}
+            <Link to="/register" className="text-blue-700 hover:text-blue-800 font-bold">{t('auth.create_free')}</Link>
           </p>
         </div>
 
         <div className="mt-6">
-          <p className="text-center text-xs text-slate-500 mb-3 font-bold uppercase tracking-wider">Quick Demo Access</p>
+          <p className="text-center text-xs text-slate-500 mb-3 font-bold uppercase tracking-wider">{t('auth.demo_title')}</p>
           <div className="grid grid-cols-2 gap-2">
             {DEMO_ACCOUNTS.map((acc) => (
               <button
@@ -138,7 +147,7 @@ export default function Login() {
                 className="bg-white border border-slate-200 rounded-xl p-3 text-left hover:border-blue-500/30 transition-all group shadow-sm"
                 id={`demo-${acc.role.toLowerCase().replace(' ', '-')}`}
               >
-                <p className="text-xs font-bold text-slate-900 group-hover:text-blue-700 transition-colors">{acc.role}</p>
+                <p className="text-xs font-bold text-slate-900 group-hover:text-blue-700 transition-colors">{roleTranslation[acc.role] || acc.role}</p>
                 <p className="text-xs text-slate-500 mt-0.5 truncate">{acc.email}</p>
               </button>
             ))}
@@ -146,7 +155,7 @@ export default function Login() {
         </div>
 
         <p className="text-center text-xs text-slate-500 mt-6">
-          <Link to="/" className="hover:text-slate-800 transition-colors font-medium">← Back to home</Link>
+          <Link to="/" className="hover:text-slate-800 transition-colors font-medium">← {t('auth.back_to_home')}</Link>
         </p>
       </div>
     </div>

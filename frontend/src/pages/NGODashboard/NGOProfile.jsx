@@ -5,6 +5,7 @@ import { Building2, MapPin, Users, Globe, Phone, Mail, FileText, Plus, Save, Che
 import Badge from '../../components/common/Badge';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 const FOCUS_OPTIONS = [
   'education', 'health', 'women_empowerment', 'rural_development', 'skill_development',
@@ -16,6 +17,8 @@ export default function NGOProfile() {
   const navigate = useNavigate();
   const { myNGO } = useSelector((s) => s.ngo);
   const [saving, setSaving] = useState(false);
+  const { t } = useTranslation();
+
   const [form, setForm] = useState({
     name: myNGO?.name || '',
     registrationNumber: myNGO?.registrationNumber || '',
@@ -50,12 +53,12 @@ export default function NGOProfile() {
     setSaving(true);
     if (myNGO?._id) {
       const result = await dispatch(updateNGO({ id: myNGO._id, data: form }));
-      if (updateNGO.fulfilled.match(result)) { toast.success('NGO profile updated!'); }
-      else toast.error(result.payload || 'Update failed');
+      if (updateNGO.fulfilled.match(result)) { toast.success(t('ngo_profile.update_success')); }
+      else toast.error(result.payload || t('ngo_profile.update_failed'));
     } else {
       const result = await dispatch(createNGO(form));
-      if (createNGO.fulfilled.match(result)) { toast.success('NGO registered successfully!'); navigate('/dashboard/ngo'); }
-      else toast.error(result.payload || 'Registration failed');
+      if (createNGO.fulfilled.match(result)) { toast.success(t('ngo_profile.register_success')); navigate('/dashboard/ngo'); }
+      else toast.error(result.payload || t('ngo_profile.register_failed'));
     }
     setSaving(false);
   };
@@ -64,81 +67,81 @@ export default function NGOProfile() {
     <div className="max-w-3xl space-y-6 fade-in-up">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 font-display">{myNGO ? 'Edit NGO Profile' : 'Register Your NGO'}</h1>
-          <p className="text-slate-600 mt-1 font-semibold">{myNGO ? `Last updated: ${new Date(myNGO.updatedAt).toLocaleDateString('en-IN')}` : 'Complete your profile to access all features'}</p>
+          <h1 className="text-2xl font-bold text-slate-900 font-display">{myNGO ? t('ngo_profile.edit_title') : t('ngo_profile.register_title')}</h1>
+          <p className="text-slate-600 mt-1 font-semibold">{myNGO ? `${t('ngo_profile.last_updated')}: ${new Date(myNGO.updatedAt).toLocaleDateString('en-IN')}` : t('ngo_profile.register_subtitle')}</p>
         </div>
         {myNGO && <Badge variant={myNGO.status} className="capitalize">{myNGO.status}</Badge>}
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4">
-          <h2 className="text-base font-bold text-slate-900 flex items-center gap-2"><Building2 className="w-4 h-4 text-blue-700" /> Basic Information</h2>
+          <h2 className="text-base font-bold text-slate-900 flex items-center gap-2"><Building2 className="w-4 h-4 text-blue-700" /> {t('ngo_profile.basic_info')}</h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-semibold text-slate-700 mb-1.5">NGO Name *</label>
-              <input className="input-field" value={form.name} onChange={(e) => set('name', e.target.value)} required placeholder="Full legal name of NGO" id="ngo-name" />
+              <label className="block text-sm font-semibold text-slate-700 mb-1.5">{t('ngo_profile.ngo_name')}</label>
+              <input className="input-field" value={form.name} onChange={(e) => set('name', e.target.value)} required placeholder={t('ngo_profile.ngo_name_placeholder')} id="ngo-name" />
             </div>
             <div>
-              <label className="block text-sm font-semibold text-slate-700 mb-1.5">Registration Number *</label>
+              <label className="block text-sm font-semibold text-slate-700 mb-1.5">{t('ngo_profile.reg_number')}</label>
               <input className="input-field" value={form.registrationNumber} onChange={(e) => set('registrationNumber', e.target.value)} required placeholder="MH/2019/0001234" id="ngo-regno" />
             </div>
             <div>
-              <label className="block text-sm font-semibold text-slate-700 mb-1.5">Registration Type</label>
+              <label className="block text-sm font-semibold text-slate-700 mb-1.5">{t('ngo_profile.reg_type')}</label>
               <select className="input-field" value={form.registrationType} onChange={(e) => set('registrationType', e.target.value)} id="ngo-regtype">
-                {['trust', 'society', 'section_8', 'fcra', 'other'].map((t) => <option key={t} value={t} className="capitalize">{t.replace('_', ' ').toUpperCase()}</option>)}
+                {['trust', 'society', 'section_8', 'fcra', 'other'].map((tVal) => <option key={tVal} value={tVal} className="capitalize">{tVal.replace('_', ' ').toUpperCase()}</option>)}
               </select>
             </div>
             <div>
-              <label className="block text-sm font-semibold text-slate-700 mb-1.5">PAN Number</label>
+              <label className="block text-sm font-semibold text-slate-700 mb-1.5">{t('ngo_profile.pan_number')}</label>
               <input className="input-field" value={form.pan} onChange={(e) => set('pan', e.target.value)} placeholder="AAPTS1234B" id="ngo-pan" />
             </div>
             <div>
-              <label className="block text-sm font-semibold text-slate-700 mb-1.5">Established Year</label>
+              <label className="block text-sm font-semibold text-slate-700 mb-1.5">{t('ngo_profile.established_year')}</label>
               <input className="input-field" type="number" value={form.establishedYear} onChange={(e) => set('establishedYear', e.target.value)} placeholder="2015" min={1900} max={2024} id="ngo-year" />
             </div>
             <div>
-              <label className="block text-sm font-semibold text-slate-700 mb-1.5">Website</label>
+              <label className="block text-sm font-semibold text-slate-700 mb-1.5">{t('ngo_profile.website')}</label>
               <input className="input-field" value={form.website} onChange={(e) => set('website', e.target.value)} placeholder="https://yourorg.org" id="ngo-website" />
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-slate-700 mb-1.5">Description *</label>
+            <label className="block text-sm font-semibold text-slate-700 mb-1.5">{t('proposal.project_desc')}</label>
             <textarea className="input-field min-h-24 resize-none" value={form.description} onChange={(e) => set('description', e.target.value)} required
-              placeholder="Describe your NGO's work, impact, and approach..." id="ngo-desc" />
+              placeholder={t('ngo_profile.desc_placeholder')} id="ngo-desc" />
           </div>
           <div>
-            <label className="block text-sm font-semibold text-slate-700 mb-1.5">Mission Statement</label>
+            <label className="block text-sm font-semibold text-slate-700 mb-1.5">{t('landing.sec_4_guidelines')}</label>
             <textarea className="input-field min-h-16 resize-none" value={form.mission} onChange={(e) => set('mission', e.target.value)}
-              placeholder="Your NGO's mission in one or two sentences..." id="ngo-mission" />
+              placeholder={t('ngo_profile.mission_placeholder')} id="ngo-mission" />
           </div>
         </div>
 
         <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4">
-          <h2 className="text-base font-bold text-slate-900 flex items-center gap-2"><CheckCircle className="w-4 h-4 text-emerald-600" /> Focus Areas</h2>
-          <p className="text-slate-600 text-sm font-semibold">Select all that apply — used for AI scheme recommendations</p>
+          <h2 className="text-base font-bold text-slate-900 flex items-center gap-2"><CheckCircle className="w-4 h-4 text-emerald-600" /> {t('ngo.focus_areas')}</h2>
+          <p className="text-slate-600 text-sm font-semibold">{t('ngo_profile.focus_areas_desc')}</p>
           <div className="flex flex-wrap gap-2">
             {FOCUS_OPTIONS.map((area) => (
               <button key={area} type="button" onClick={() => toggleFocus(area)}
                 className={`px-3 py-1.5 rounded-full text-sm border font-semibold transition-all capitalize
                   ${form.focusAreas.includes(area) ? 'bg-blue-50 border-blue-200 text-blue-700 font-bold' : 'border-slate-200 text-slate-600 hover:border-slate-300 bg-white hover:text-slate-900'}`}>
-                {area.replace('_', ' ')}
+                {t('ngo.focus_area_' + area) || area.replace('_', ' ')}
               </button>
             ))}
           </div>
         </div>
 
         <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4">
-          <h2 className="text-base font-bold text-slate-900 flex items-center gap-2"><MapPin className="w-4 h-4 text-indigo-700" /> Location</h2>
+          <h2 className="text-base font-bold text-slate-900 flex items-center gap-2"><MapPin className="w-4 h-4 text-indigo-700" /> {t('proposal.location')}</h2>
           <div>
-            <label className="block text-sm font-semibold text-slate-700 mb-1.5">Address</label>
-            <input className="input-field" value={form.location.address} onChange={(e) => setNested('location', 'address', e.target.value)} placeholder="Street address" id="ngo-addr" />
+            <label className="block text-sm font-semibold text-slate-700 mb-1.5">{t('ngo_profile.address')}</label>
+            <input className="input-field" value={form.location.address} onChange={(e) => setNested('location', 'address', e.target.value)} placeholder={t('ngo_profile.address_placeholder')} id="ngo-addr" />
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             {['city', 'district', 'state', 'pincode'].map((f) => (
               <div key={f}>
-                <label className="block text-sm font-semibold text-slate-700 mb-1.5 capitalize">{f}</label>
+                <label className="block text-sm font-semibold text-slate-700 mb-1.5 capitalize">{t('ngo_profile.' + f) || f}</label>
                 <input className="input-field" value={form.location[f]} onChange={(e) => setNested('location', f, e.target.value)} id={`ngo-${f}`} />
               </div>
             ))}
@@ -146,20 +149,20 @@ export default function NGOProfile() {
         </div>
 
         <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4">
-          <h2 className="text-base font-bold text-slate-900 flex items-center gap-2"><Users className="w-4 h-4 text-cyan-700" /> Contact Information</h2>
+          <h2 className="text-base font-bold text-slate-900 flex items-center gap-2"><Users className="w-4 h-4 text-cyan-700" /> {t('ngo_profile.contact_info')}</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-semibold text-slate-700 mb-1.5 flex items-center gap-1.5"><Mail className="w-3.5 h-3.5 text-blue-700" /> Official Email</label>
+              <label className="block text-sm font-semibold text-slate-700 mb-1.5 flex items-center gap-1.5"><Mail className="w-3.5 h-3.5 text-blue-700" /> {t('ngo_profile.official_email')}</label>
               <input className="input-field" type="email" value={form.email} onChange={(e) => set('email', e.target.value)} placeholder="contact@yourorg.org" id="ngo-email" />
             </div>
             <div>
-              <label className="block text-sm font-semibold text-slate-700 mb-1.5 flex items-center gap-1.5"><Phone className="w-3.5 h-3.5 text-emerald-700" /> Phone</label>
+              <label className="block text-sm font-semibold text-slate-700 mb-1.5 flex items-center gap-1.5"><Phone className="w-3.5 h-3.5 text-emerald-700" /> {t('ngo_profile.phone')}</label>
               <input className="input-field" value={form.phone} onChange={(e) => set('phone', e.target.value)} placeholder="+91 98765 43210" id="ngo-phone" />
             </div>
           </div>
-          <h3 className="text-sm font-bold text-slate-700 mt-2">Contact Person</h3>
+          <h3 className="text-sm font-bold text-slate-700 mt-2">{t('ngo_profile.contact_person')}</h3>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            {[['name', 'Full Name'], ['designation', 'Designation'], ['email', 'Email'], ['phone', 'Phone']].map(([f, l]) => (
+            {[['name', t('profile_page.full_name')], ['designation', 'Designation'], ['email', t('profile_page.email')], ['phone', t('profile_page.phone')]].map(([f, l]) => (
               <div key={f}>
                 <label className="block text-xs font-semibold text-slate-500 mb-1">{l}</label>
                 <input className="input-field text-sm py-2" value={form.contactPerson[f]} onChange={(e) => setNested('contactPerson', f, e.target.value)} id={`ngo-cp-${f}`} />
@@ -169,9 +172,9 @@ export default function NGOProfile() {
         </div>
 
         <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4">
-          <h2 className="text-base font-bold text-slate-900 flex items-center gap-2"><FileText className="w-4 h-4 text-amber-700" /> Team & Financial Info</h2>
+          <h2 className="text-base font-bold text-slate-900 flex items-center gap-2"><FileText className="w-4 h-4 text-amber-700" /> {t('ngo_profile.team_financial')}</h2>
           <div className="grid grid-cols-3 gap-4">
-            {[['teamSize', 'Team Size'], ['annualBudget', 'Annual Budget (₹)'], ['fundingRequirement', 'Funding Needed (₹)']].map(([f, l]) => (
+            {[['teamSize', t('ngo_profile.team_size')], ['annualBudget', t('ngo_profile.annual_budget')], ['fundingRequirement', t('ngo_profile.funding_requirement')]].map(([f, l]) => (
               <div key={f}>
                 <label className="block text-sm font-semibold text-slate-700 mb-1.5">{l}</label>
                 <input className="input-field" type="number" value={form[f]} onChange={(e) => set(f, e.target.value)} min={0} id={`ngo-${f}`} />
@@ -181,8 +184,8 @@ export default function NGOProfile() {
         </div>
 
         <button type="submit" disabled={saving} className="btn-primary py-3 px-8 shadow-sm" id="save-ngo-btn">
-          {saving ? <span className="flex items-center gap-2"><div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />{myNGO ? 'Updating...' : 'Registering...'}</span>
-            : <span className="flex items-center gap-2">{myNGO ? <Save className="w-4 h-4" /> : <Plus className="w-4 h-4" />}{myNGO ? 'Update NGO Profile' : 'Register NGO'}</span>}
+          {saving ? <span className="flex items-center gap-2"><div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />{t('ngo_profile.updating')}</span>
+            : <span className="flex items-center gap-2">{myNGO ? <Save className="w-4 h-4" /> : <Plus className="w-4 h-4" />}{myNGO ? t('ngo_profile.update_btn') : t('ngo_profile.register_btn')}</span>}
         </button>
       </form>
     </div>

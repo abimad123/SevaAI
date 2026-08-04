@@ -4,6 +4,7 @@ import { generateProposal, clearProposal } from '../../store/slices/chatSlice';
 import { Lightbulb, Sparkles, Download, Copy, RefreshCw, CheckCircle, MapPin, Users, Calendar, IndianRupee, Target, FileText } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import toast from 'react-hot-toast';
+import { useTranslation } from 'react-i18next';
 
 const FOCUS_AREAS = ['Education', 'Health', 'Women Empowerment', 'Rural Development', 'Skill Development', 'Environment', 'Children', 'Livelihood', 'Agriculture', 'Social Welfare'];
 
@@ -12,14 +13,18 @@ export default function ProposalGenerator() {
   const { proposal, proposalLoading } = useSelector((s) => s.chat);
   const [form, setForm] = useState({ projectName: '', location: '', budget: '', targetGroup: '', duration: '', description: '', focusArea: '' });
   const [activeTab, setActiveTab] = useState('summary');
+  const { t } = useTranslation();
 
   const set = (k, v) => setForm((f) => ({ ...f, [k]: v }));
 
   const handleGenerate = async (e) => {
     e.preventDefault();
     const result = await dispatch(generateProposal(form));
-    if (generateProposal.fulfilled.match(result)) toast.success('Proposal generated successfully!');
-    else toast.error('Generation failed. Please try again.');
+    if (generateProposal.fulfilled.match(result)) {
+      toast.success('Proposal generated successfully!');
+    } else {
+      toast.error('Generation failed. Please try again.');
+    }
   };
 
   const handleCopy = () => {
@@ -39,48 +44,48 @@ export default function ProposalGenerator() {
   };
 
   const tabs = [
-    { id: 'summary', label: 'Summary' },
-    { id: 'objectives', label: 'Objectives' },
-    { id: 'timeline', label: 'Timeline & Budget' },
-    { id: 'impact', label: 'Impact & M&E' },
-    { id: 'full', label: 'Full Proposal' },
+    { id: 'summary', label: t('doc.summary') },
+    { id: 'objectives', label: t('proposal.tab_objectives') },
+    { id: 'timeline', label: t('proposal.tab_timeline') },
+    { id: 'impact', label: t('proposal.tab_impact') },
+    { id: 'full', label: t('proposal.tab_full') },
   ];
 
   return (
     <div className="space-y-6 fade-in-up">
       <div>
         <h1 className="text-2xl font-bold text-slate-900 font-display flex items-center gap-2">
-          <Lightbulb className="w-7 h-7 text-amber-500" /> AI Proposal Generator
+          <Lightbulb className="w-7 h-7 text-amber-500" /> {t('proposal.title')}
         </h1>
-        <p className="text-slate-600 mt-1">Enter project details — AI generates a complete, professional NGO project proposal</p>
+        <p className="text-slate-600 mt-1">{t('proposal.desc')}</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div>
           <form onSubmit={handleGenerate} className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-5">
-            <h2 className="text-base font-bold text-slate-900">Project Information</h2>
+            <h2 className="text-base font-bold text-slate-900">{t('proposal.project_info')}</h2>
 
             <div>
               <label className="block text-sm font-semibold text-slate-700 mb-1.5 flex items-center gap-1.5">
-                <FileText className="w-4 h-4 text-blue-700" /> Project Name *
+                <FileText className="w-4 h-4 text-blue-700" /> {t('proposal.project_name')}
               </label>
-              <input className="input-field" placeholder="e.g. Digital Literacy Initiative for Rural Youth" value={form.projectName}
+              <input className="input-field" placeholder={t('proposal.placeholder_name')} value={form.projectName}
                 onChange={(e) => set('projectName', e.target.value)} required id="prop-name" />
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-semibold text-slate-700 mb-1.5 flex items-center gap-1.5">
-                  <MapPin className="w-4 h-4 text-emerald-700" /> Location *
+                  <MapPin className="w-4 h-4 text-emerald-700" /> {t('proposal.location')}
                 </label>
-                <input className="input-field" placeholder="District, State" value={form.location}
+                <input className="input-field" placeholder={t('proposal.placeholder_location')} value={form.location}
                   onChange={(e) => set('location', e.target.value)} required id="prop-location" />
               </div>
               <div>
                 <label className="block text-sm font-semibold text-slate-700 mb-1.5 flex items-center gap-1.5">
-                  <IndianRupee className="w-4 h-4 text-amber-600" /> Budget (₹) *
+                  <IndianRupee className="w-4 h-4 text-amber-600" /> {t('proposal.budget')}
                 </label>
-                <input className="input-field" placeholder="e.g. 500000" type="number" value={form.budget}
+                <input className="input-field" placeholder={t('proposal.placeholder_budget')} type="number" value={form.budget}
                   onChange={(e) => set('budget', e.target.value)} required id="prop-budget" />
               </div>
             </div>
@@ -88,38 +93,38 @@ export default function ProposalGenerator() {
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-semibold text-slate-700 mb-1.5 flex items-center gap-1.5">
-                  <Users className="w-4 h-4 text-indigo-700" /> Target Group *
+                  <Users className="w-4 h-4 text-indigo-700" /> {t('proposal.target_group')}
                 </label>
-                <input className="input-field" placeholder="e.g. Rural women aged 18-35" value={form.targetGroup}
+                <input className="input-field" placeholder={t('proposal.placeholder_target')} value={form.targetGroup}
                   onChange={(e) => set('targetGroup', e.target.value)} required id="prop-target" />
               </div>
               <div>
                 <label className="block text-sm font-semibold text-slate-700 mb-1.5 flex items-center gap-1.5">
-                  <Calendar className="w-4 h-4 text-cyan-700" /> Duration *
+                  <Calendar className="w-4 h-4 text-cyan-700" /> {t('proposal.duration')}
                 </label>
-                <input className="input-field" placeholder="e.g. 12 months" value={form.duration}
+                <input className="input-field" placeholder={t('proposal.placeholder_duration')} value={form.duration}
                   onChange={(e) => set('duration', e.target.value)} required id="prop-duration" />
               </div>
             </div>
 
             <div>
               <label className="block text-sm font-semibold text-slate-700 mb-1.5 flex items-center gap-1.5">
-                <Target className="w-4 h-4 text-pink-700" /> Focus Area
+                <Target className="w-4 h-4 text-pink-700" /> {t('proposal.focus_area')}
               </label>
               <div className="flex flex-wrap gap-2">
                 {FOCUS_AREAS.map((f) => (
                   <button key={f} type="button" onClick={() => set('focusArea', f)}
                     className={`px-3 py-1 rounded-full text-xs font-semibold border transition-all
                       ${form.focusArea === f ? 'bg-blue-50 border-blue-200 text-blue-700' : 'border-slate-200 text-slate-600 hover:border-slate-300 bg-white hover:text-slate-900'}`}>
-                    {f}
+                    {t('ngo.focus_area_' + f.toLowerCase().replace(' ', '_')) || f}
                   </button>
                 ))}
               </div>
             </div>
 
             <div>
-              <label className="block text-sm font-semibold text-slate-700 mb-1.5">Project Description (Optional)</label>
-              <textarea className="input-field min-h-24 resize-none" placeholder="Brief description of the project goals and approach..."
+              <label className="block text-sm font-semibold text-slate-700 mb-1.5">{t('proposal.project_desc')}</label>
+              <textarea className="input-field min-h-24 resize-none" placeholder={t('proposal.placeholder_desc')}
                 value={form.description} onChange={(e) => set('description', e.target.value)} id="prop-desc" />
             </div>
 
@@ -128,10 +133,10 @@ export default function ProposalGenerator() {
                 {proposalLoading ? (
                   <span className="flex items-center gap-2">
                     <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                    AI is writing your proposal...
+                    {t('proposal.generating')}
                   </span>
                 ) : (
-                  <span className="flex items-center gap-2"><Sparkles className="w-4 h-4" /> Generate Proposal</span>
+                  <span className="flex items-center gap-2"><Sparkles className="w-4 h-4" /> {t('proposal.generate')}</span>
                 )}
               </button>
               {proposal && (
@@ -143,12 +148,11 @@ export default function ProposalGenerator() {
           </form>
 
           <div className="bg-amber-50 border border-amber-100 rounded-xl p-4 mt-4 shadow-sm">
-            <p className="text-sm font-bold text-amber-800 mb-2 flex items-center gap-1.5"><Lightbulb className="w-4 h-4" /> Tips for a Better Proposal</p>
+            <p className="text-sm font-bold text-amber-800 mb-2 flex items-center gap-1.5"><Lightbulb className="w-4 h-4" /> {t('proposal.tips_title')}</p>
             <ul className="space-y-1 text-xs text-slate-600 font-semibold">
-              <li>• Be specific about the target group and geographic area</li>
-              <li>• Include a realistic budget figure</li>
-              <li>• Mention the social problem you are addressing</li>
-              <li>• Select a focus area for more targeted content</li>
+              {[0, 1, 2, 3].map((idx) => (
+                <li key={idx}>• {t('proposal.tip_' + idx)}</li>
+              ))}
             </ul>
           </div>
         </div>
@@ -159,11 +163,11 @@ export default function ProposalGenerator() {
               <div className="w-20 h-20 rounded-3xl bg-amber-50 border border-amber-100 flex items-center justify-center mx-auto mb-4">
                 <Lightbulb className="w-10 h-10 text-amber-500" />
               </div>
-              <h3 className="text-xl font-bold text-slate-900 font-display mb-2">Ready to Generate</h3>
-              <p className="text-slate-600 text-sm max-w-xs font-semibold">Fill in the project details and click Generate. SevaAI will create a complete professional proposal in seconds.</p>
+              <h3 className="text-xl font-bold text-slate-900 font-display mb-2">{t('proposal.ready_title')}</h3>
+              <p className="text-slate-600 text-sm max-w-xs font-semibold">{t('proposal.ready_desc')}</p>
               <div className="flex flex-wrap gap-2 justify-center mt-5">
-                {['Executive Summary', 'Objectives', 'Budget Breakdown', 'Impact Metrics', 'M&E Strategy'].map((f) => (
-                  <span key={f} className="px-3 py-1 rounded-full bg-slate-100 text-slate-600 text-xs border border-slate-200 font-semibold">{f}</span>
+                {[0, 1, 2, 3, 4].map((idx) => (
+                  <span key={idx} className="px-3 py-1 rounded-full bg-slate-100 text-slate-600 text-xs border border-slate-200 font-semibold">{t('proposal.ready_item_' + idx)}</span>
                 ))}
               </div>
             </div>
@@ -175,7 +179,7 @@ export default function ProposalGenerator() {
                 <div className="w-16 h-16 rounded-2xl bg-blue-700 flex items-center justify-center mx-auto mb-4">
                   <Sparkles className="w-8 h-8 text-white animate-pulse" />
                 </div>
-                <p className="text-slate-900 font-bold mb-1">AI is crafting your proposal...</p>
+                <p className="text-slate-900 font-bold mb-1">{t('proposal.generating')}</p>
                 <p className="text-slate-500 text-sm font-semibold">This may take 10–30 seconds</p>
                 <div className="flex gap-1 justify-center mt-4">
                   {[0, 1, 2].map((i) => <div key={i} className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: `${i * 0.2}s` }} />)}
@@ -190,7 +194,7 @@ export default function ProposalGenerator() {
                 <div>
                   <div className="flex items-center gap-2 mb-1">
                     <CheckCircle className="w-4 h-4 text-emerald-700" />
-                    <p className="text-sm font-bold text-emerald-700">Proposal Generated!</p>
+                    <p className="text-sm font-bold text-emerald-700">{t('proposal.output_title')}</p>
                   </div>
                   <p className="text-base font-bold text-slate-900">{proposal.title}</p>
                 </div>
@@ -201,11 +205,11 @@ export default function ProposalGenerator() {
               </div>
 
               <div className="flex overflow-x-auto border-b border-slate-200 px-4 gap-1 bg-slate-50">
-                {tabs.map((t) => (
-                  <button key={t.id} onClick={() => setActiveTab(t.id)}
+                {tabs.map((tItem) => (
+                  <button key={tItem.id} onClick={() => setActiveTab(tItem.id)}
                     className={`py-3 px-3 text-xs font-bold border-b-2 transition-all whitespace-nowrap
-                      ${activeTab === t.id ? 'border-blue-700 text-blue-700' : 'border-transparent text-slate-500 hover:text-slate-800'}`}>
-                    {t.label}
+                      ${activeTab === tItem.id ? 'border-blue-700 text-blue-700' : 'border-transparent text-slate-500 hover:text-slate-800'}`}>
+                    {tItem.label}
                   </button>
                 ))}
               </div>
@@ -226,14 +230,14 @@ export default function ProposalGenerator() {
                 )}
                 {activeTab === 'timeline' && (
                   <div className="space-y-4">
-                    <div><p className="text-xs font-bold text-slate-400 uppercase mb-2">Timeline</p><p className="text-sm text-slate-700 font-medium leading-relaxed">{proposal.timeline}</p></div>
-                    <div><p className="text-xs font-bold text-slate-400 uppercase mb-2">Budget Breakdown</p><p className="text-sm text-slate-700 font-medium leading-relaxed">{proposal.budget_breakdown}</p></div>
+                    <div><p className="text-xs font-bold text-slate-400 uppercase mb-2">{t('proposal.timeline')}</p><p className="text-sm text-slate-700 font-medium leading-relaxed">{proposal.timeline}</p></div>
+                    <div><p className="text-xs font-bold text-slate-400 uppercase mb-2">{t('proposal.budget_breakdown')}</p><p className="text-sm text-slate-700 font-medium leading-relaxed">{proposal.budget_breakdown}</p></div>
                   </div>
                 )}
                 {activeTab === 'impact' && (
                   <div className="space-y-4">
-                    <div><p className="text-xs font-bold text-slate-400 uppercase mb-2">Expected Impact</p><p className="text-sm text-slate-700 font-medium leading-relaxed">{proposal.expected_impact}</p></div>
-                    <div><p className="text-xs font-bold text-slate-400 uppercase mb-2">Monitoring & Evaluation</p><p className="text-sm text-slate-700 font-medium leading-relaxed">{proposal.monitoring_strategy}</p></div>
+                    <div><p className="text-xs font-bold text-slate-400 uppercase mb-2">{t('proposal.expected_impact')}</p><p className="text-sm text-slate-700 font-medium leading-relaxed">{proposal.expected_impact}</p></div>
+                    <div><p className="text-xs font-bold text-slate-400 uppercase mb-2">{t('proposal.monitoring_evaluation')}</p><p className="text-sm text-slate-700 font-medium leading-relaxed">{proposal.monitoring_strategy}</p></div>
                   </div>
                 )}
                 {activeTab === 'full' && (

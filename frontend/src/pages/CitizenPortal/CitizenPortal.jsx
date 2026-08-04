@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Sparkles, Globe, MessageSquare, MapPin, ArrowRight, Phone, Heart } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 const QUICK_LINKS = [
   { label: 'PM Poshan Shakti Nirman', category: 'Education', color: 'indigo' },
@@ -20,48 +21,50 @@ const colorMap = {
 };
 
 export default function CitizenPortal() {
+  const { t } = useTranslation();
+
   return (
     <div className="space-y-8 fade-in-up">
       <div className="relative rounded-3xl p-8 md:p-12 overflow-hidden text-center bg-blue-50/50 border border-blue-100 shadow-sm">
         <div className="absolute top-0 left-1/3 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
         <div className="relative">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-50 border border-blue-100 text-blue-700 text-sm mb-5 font-semibold">
-            <Heart className="w-4 h-4 text-rose-500 animate-pulse" /> Citizen Support Portal
+            <Heart className="w-4 h-4 text-rose-500 animate-pulse" /> {t('citizen.badge')}
           </div>
           <h1 className="text-3xl md:text-4xl font-extrabold font-display text-slate-900 mb-3">
-            नमस्ते! How can SevaAI help you today?
+            {t('citizen.hero_title')}
           </h1>
-          <p className="text-slate-600 mb-8 max-w-xl mx-auto font-semibold">Find government benefits you're eligible for, locate nearby NGOs, or ask our AI assistant any question in Hindi or English.</p>
+          <p className="text-slate-600 mb-8 max-w-xl mx-auto font-semibold">{t('citizen.hero_desc')}</p>
 
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Link to="/schemes" className="btn-primary py-3 px-6">
-              <Globe className="w-5 h-5" /> Browse Schemes
+              <Globe className="w-5 h-5" /> {t('citizen.browse_schemes')}
             </Link>
             <Link to="/chat" className="btn-secondary py-3 px-6">
-              <MessageSquare className="w-5 h-5" /> Ask AI Assistant
+              <MessageSquare className="w-5 h-5" /> {t('citizen.ask_ai')}
             </Link>
           </div>
         </div>
       </div>
 
       <div>
-        <h2 className="text-xl font-bold text-slate-900 font-display mb-4">Our Services</h2>
+        <h2 className="text-xl font-bold text-slate-900 font-display mb-4">{t('citizen.our_services')}</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {[
             {
-              icon: Globe, title: 'Find Government Schemes', color: 'indigo',
-              desc: 'Search 850+ central and state government schemes and check your eligibility.',
-              action: 'Browse Schemes', to: '/schemes',
+              icon: Globe, title: t('citizen.service_schemes_title'), color: 'indigo',
+              desc: t('citizen.service_schemes_desc'),
+              action: t('citizen.service_schemes_action'), to: '/schemes',
             },
             {
-              icon: MessageSquare, title: 'AI Assistant', color: 'emerald',
-              desc: 'Ask questions in Hindi or English about benefits, schemes, and NGO services.',
-              action: 'Ask AI', to: '/chat',
+              icon: MessageSquare, title: t('citizen.service_assistant_title'), color: 'emerald',
+              desc: t('citizen.service_assistant_desc'),
+              action: t('citizen.service_assistant_action'), to: '/chat',
             },
             {
-              icon: MapPin, title: 'Find Nearby NGOs', color: 'amber',
-              desc: 'Discover NGOs working in your district and reach out for support.',
-              action: 'Find NGOs', to: '/schemes',
+              icon: MapPin, title: t('citizen.service_ngos_title'), color: 'amber',
+              desc: t('citizen.service_ngos_desc'),
+              action: t('citizen.service_ngos_action'), to: '/schemes',
             },
           ].map((s, i) => (
             <div key={i} className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm card-hover flex flex-col">
@@ -79,7 +82,7 @@ export default function CitizenPortal() {
       </div>
 
       <div>
-        <h2 className="text-xl font-bold text-slate-900 font-display mb-4">Popular Government Schemes</h2>
+        <h2 className="text-xl font-bold text-slate-900 font-display mb-4">{t('citizen.popular_schemes')}</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
           {QUICK_LINKS.map((s, i) => (
             <Link key={i} to="/schemes"
@@ -101,24 +104,24 @@ export default function CitizenPortal() {
             <Sparkles className="w-6 h-6 text-white" />
           </div>
           <div className="flex-1">
-            <h3 className="text-lg font-bold text-slate-900 mb-2">SevaAI सहायक — हिंदी में मदद</h3>
-            <p className="text-slate-600 text-sm mb-4 font-semibold">आप हिंदी में अपने सवाल पूछ सकते हैं। SevaAI आपको सरकारी योजनाओं, NGO सेवाओं और सामाजिक लाभों के बारे में जानकारी देगा।</p>
+            <h3 className="text-lg font-bold text-slate-900 mb-2">{t('citizen.hindi_support_title')}</h3>
+            <p className="text-slate-600 text-sm mb-4 font-semibold">{t('citizen.hindi_support_desc')}</p>
             <div className="flex flex-wrap gap-2 mb-4">
-              {['मेरे लिए कौन सी योजनाएं हैं?', 'नजदीकी NGO कैसे खोजें?', 'PM आवास योजना क्या है?'].map((q, i) => (
+              {[t('citizen.hindi_query_1'), t('citizen.hindi_query_2'), t('citizen.hindi_query_3')].map((q, i) => (
                 <Link key={i} to="/chat" className="px-3 py-1.5 rounded-xl bg-white border border-slate-200 text-sm text-slate-600 hover:text-slate-900 hover:border-blue-500/40 hover:bg-slate-50 transition-all font-bold shadow-sm">
                   {q}
                 </Link>
               ))}
             </div>
             <Link to="/chat" className="btn-primary text-sm">
-              <MessageSquare className="w-4 h-4" /> सहायक से पूछें (Ask AI)
+              <MessageSquare className="w-4 h-4" /> {t('citizen.hindi_action')}
             </Link>
           </div>
         </div>
       </div>
 
       <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
-        <h3 className="text-base font-bold text-slate-900 mb-4 flex items-center gap-2"><Phone className="w-5 h-5 text-emerald-700" /> Government Helplines</h3>
+        <h3 className="text-base font-bold text-slate-900 mb-4 flex items-center gap-2"><Phone className="w-5 h-5 text-emerald-700" /> {t('citizen.helplines')}</h3>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           {[
             { name: 'PM Kisan Samman', number: '1551' },

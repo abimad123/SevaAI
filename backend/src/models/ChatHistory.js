@@ -15,7 +15,7 @@ const chatHistorySchema = new mongoose.Schema({
       relevanceScore: Number,
     }],
     confidence: { type: Number, min: 0, max: 1 },
-    language: { type: String, enum: ['en', 'hi'], default: 'en' },
+    language: { type: String, enum: ['en', 'hi', 'ml', 'ta', 'te', 'kn', 'mr', 'bn', 'gu', 'pa'], default: 'en' },
     attachments: [{ name: String, url: String, type: String }],
     feedback: {
       rating: { type: Number, min: 1, max: 5 },
@@ -30,7 +30,7 @@ const chatHistorySchema = new mongoose.Schema({
     projectId: { type: mongoose.Schema.Types.ObjectId, ref: 'Project' },
     documentId: { type: mongoose.Schema.Types.ObjectId, ref: 'Document' },
   },
-  language: { type: String, enum: ['en', 'hi'], default: 'en' },
+  language: { type: String, enum: ['en', 'hi', 'ml', 'ta', 'te', 'kn', 'mr', 'bn', 'gu', 'pa'], default: 'en' },
   isActive: { type: Boolean, default: true },
   totalTokensUsed: { type: Number, default: 0 },
   lastMessageAt: { type: Date },

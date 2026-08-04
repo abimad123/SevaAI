@@ -34,7 +34,7 @@ const userSchema = new mongoose.Schema({
     district: String,
     city: String,
   },
-  language: { type: String, enum: ['en', 'hi'], default: 'en' },
+  language: { type: String, enum: ['en', 'hi', 'ml', 'ta', 'te', 'kn', 'mr', 'bn', 'gu', 'pa'], default: 'en' },
   ngoId: { type: mongoose.Schema.Types.ObjectId, ref: 'NGO', default: null },
   department: { type: String }, // for government officers
   isActive: { type: Boolean, default: true },

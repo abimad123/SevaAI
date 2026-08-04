@@ -3,18 +3,19 @@ import { useSelector, useDispatch } from 'react-redux';
 import { logout } from '../../store/slices/authSlice';
 import { toggleSidebar } from '../../store/slices/uiSlice';
 import {
-  LayoutDashboard, MessageSquare, FileSearch, Lightbulb, BarChart3,
-  Building2, Users, FileText, LogOut, Settings, ChevronLeft, Sparkles,
+  LayoutDashboard, MessageSquare, Lightbulb, BarChart3,
+  Building2, LogOut, Settings, ChevronLeft, Sparkles,
   Globe, Shield
 } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { useTranslation } from 'react-i18next';
 
 const navItems = {
   ngo_admin: [
     { label: 'Dashboard', path: '/dashboard/ngo', icon: LayoutDashboard },
     { label: 'AI Assistant', path: '/chat', icon: MessageSquare },
     { label: 'Schemes', path: '/schemes', icon: Globe },
-    { label: 'Documents', path: '/documents', icon: FileText },
+    { label: 'Documents', path: '/documents', icon: FileTextIcon },
     { label: 'Proposal Generator', path: '/proposal', icon: Lightbulb },
     { label: 'Analytics', path: '/analytics', icon: BarChart3 },
     { label: 'NGO Profile', path: '/ngo/profile', icon: Building2 },
@@ -45,11 +46,55 @@ const navItems = {
   ],
 };
 
+function FileTextIcon(props) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      {...props}
+    >
+      <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z" />
+      <path d="M14 2v4a2 2 0 0 0 2 2h4" />
+      <path d="M10 9H8" />
+      <path d="M16 13H8" />
+      <path d="M16 17H8" />
+    </svg>
+  );
+}
+
+const keyMap = {
+  'Dashboard': 'sidebar.dashboard',
+  'AI Assistant': 'sidebar.ai_assistant',
+  'Schemes': 'sidebar.schemes',
+  'Documents': 'sidebar.documents',
+  'Proposal Generator': 'sidebar.proposal_generator',
+  'Analytics': 'sidebar.analytics',
+  'NGO Profile': 'sidebar.ngo_profile',
+  'NGOs': 'sidebar.ngos',
+  'Portal': 'sidebar.portal',
+  'Browse Schemes': 'sidebar.browse_schemes',
+  'Overview': 'sidebar.overview',
+  'Admin': 'sidebar.admin'
+};
+
+const roleColors = {
+  ngo_admin: 'text-blue-700', government_officer: 'text-slate-700',
+  volunteer: 'text-emerald-700', citizen: 'text-slate-600', system_admin: 'text-indigo-700',
+};
+
 export default function Sidebar() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { user } = useSelector((s) => s.auth);
   const { sidebarOpen } = useSelector((s) => s.ui);
+  const { t } = useTranslation();
 
   const items = navItems[user?.role] || navItems.citizen;
 
@@ -57,15 +102,6 @@ export default function Sidebar() {
     dispatch(logout());
     toast.success('Logged out successfully');
     navigate('/');
-  };
-
-  const roleLabels = {
-    ngo_admin: 'NGO Admin', government_officer: 'Government Officer',
-    volunteer: 'Volunteer', citizen: 'Citizen', system_admin: 'System Admin',
-  };
-  const roleColors = {
-    ngo_admin: 'text-blue-700', government_officer: 'text-slate-700',
-    volunteer: 'text-emerald-700', citizen: 'text-slate-600', system_admin: 'text-indigo-700',
   };
 
   return (
@@ -109,7 +145,7 @@ export default function Sidebar() {
             </div>
             <div className="min-w-0">
               <p className="text-sm font-semibold text-slate-900 truncate">{user?.name}</p>
-              <p className={`text-xs font-semibold ${roleColors[user?.role]}`}>{roleLabels[user?.role]}</p>
+              <p className={`text-xs font-semibold ${roleColors[user?.role]}`}>{t(`roles.${user?.role}`)}</p>
             </div>
           </div>
         </div>
@@ -126,10 +162,10 @@ export default function Sidebar() {
                 ${isActive ? 'active text-blue-700 bg-blue-50' : 'text-slate-500 hover:text-slate-800'}
                 ${!sidebarOpen ? 'justify-center' : ''}`
               }
-              title={!sidebarOpen ? item.label : undefined}
+              title={!sidebarOpen ? t(keyMap[item.label] || item.label) : undefined}
             >
               <item.icon className="w-5 h-5 shrink-0" />
-              {sidebarOpen && <span>{item.label}</span>}
+              {sidebarOpen && <span>{t(keyMap[item.label] || item.label)}</span>}
             </NavLink>
           ))}
         </div>
@@ -143,17 +179,17 @@ export default function Sidebar() {
             ${isActive ? 'active text-blue-700 bg-blue-50' : 'text-slate-500 hover:text-slate-800'}
             ${!sidebarOpen ? 'justify-center' : ''}`
           }
-          title={!sidebarOpen ? 'Profile' : undefined}
+          title={!sidebarOpen ? t('sidebar.profile_settings') : undefined}
         >
           <Settings className="w-5 h-5 shrink-0" />
-          {sidebarOpen && <span>Profile & Settings</span>}
+          {sidebarOpen && <span>{t('sidebar.profile_settings')}</span>}
         </NavLink>
         <button
           onClick={handleLogout}
           className={`sidebar-link w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-red-600 hover:text-red-700 hover:bg-red-50 ${!sidebarOpen ? 'justify-center' : ''}`}
         >
           <LogOut className="w-5 h-5 shrink-0" />
-          {sidebarOpen && <span>Logout</span>}
+          {sidebarOpen && <span>{t('sidebar.logout')}</span>}
         </button>
       </div>
     </aside>
