@@ -14,7 +14,9 @@
     "pending": "लंबित",
     "rejected": "अस्वीकृत",
     "completed": "पूरा हुआ",
-    "refresh": "रिफ्रेश करें"
+    "refresh": "रिफ्रेश करें",
+    "copy": "कॉपी करें",
+    "regenerate": "पुनः उत्पन्न करें"
   },
   "nav": {
     "notifications": "सूचनाएं",
@@ -47,6 +49,7 @@
     "browse_schemes": "योजनाएं देखें",
     "overview": "अवलोकन",
     "admin": "व्यवस्थापक",
+    "knowledge_base": "ज्ञानकोश",
     "profile_settings": "प्रोफ़ाइल और सेटिंग्स",
     "logout": "लॉगआउट"
   },

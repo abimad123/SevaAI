@@ -3,6 +3,8 @@ const mongoose = require('mongoose');
 const chatHistorySchema = new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   sessionId: { type: String, required: true },
+  conversationId: { type: String, required: true },
+  role: { type: String, required: true, default: 'citizen' },
   title: { type: String, default: 'New Conversation' },
   messages: [{
     role: { type: String, enum: ['user', 'assistant'], required: true },
@@ -37,5 +39,6 @@ const chatHistorySchema = new mongoose.Schema({
 }, { timestamps: true });
 
 chatHistorySchema.index({ userId: 1, sessionId: 1 });
+chatHistorySchema.index({ userId: 1, conversationId: 1 });
 
 module.exports = mongoose.model('ChatHistory', chatHistorySchema);

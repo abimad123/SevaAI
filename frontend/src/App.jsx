@@ -23,6 +23,7 @@ const ProposalGenerator = lazy(() => import('./pages/ProposalGenerator/ProposalG
 const Analytics = lazy(() => import('./pages/Analytics/Analytics'));
 const Profile = lazy(() => import('./pages/Profile/Profile'));
 const NGOProfile = lazy(() => import('./pages/NGODashboard/NGOProfile'));
+const KnowledgeBase = lazy(() => import('./pages/KnowledgeBase/KnowledgeBase'));
 const NotFound = lazy(() => import('./pages/NotFound'));
 
 const PageLoader = () => {
@@ -67,6 +68,7 @@ function AppRoutes() {
             <Route path="/analytics" element={<Analytics />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/ngo/profile" element={<NGOProfile />} />
+            <Route path="/admin/knowledge-base" element={<KnowledgeBase />} />
           </Route>
         </Route>
 

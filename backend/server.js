@@ -17,6 +17,7 @@ const projectRoutes = require('./src/routes/projects');
 const chatRoutes = require('./src/routes/chat');
 const documentRoutes = require('./src/routes/documents');
 const analyticsRoutes = require('./src/routes/analytics');
+const adminRoutes = require('./src/routes/admin');
 
 const app = express();
 
@@ -67,6 +68,7 @@ app.use('/api/projects', projectRoutes);
 app.use('/api/chat', chatRoutes);
 app.use('/api/documents', documentRoutes);
 app.use('/api/analytics', analyticsRoutes);
+app.use('/api/admin', adminRoutes);
 
 // 404 & Error Handlers
 app.use(notFound);

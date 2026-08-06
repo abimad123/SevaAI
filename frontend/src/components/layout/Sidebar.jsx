@@ -5,7 +5,7 @@ import { toggleSidebar } from '../../store/slices/uiSlice';
 import {
   LayoutDashboard, MessageSquare, Lightbulb, BarChart3,
   Building2, LogOut, Settings, ChevronLeft, Sparkles,
-  Globe, Shield
+  Globe, Shield, Database
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
@@ -37,12 +37,12 @@ const navItems = {
     { label: 'Schemes', path: '/schemes', icon: Globe },
   ],
   system_admin: [
-    { label: 'Overview', path: '/analytics', icon: BarChart3 },
+    { label: 'Overview', path: '/analytics', icon: LayoutDashboard },
     { label: 'AI Assistant', path: '/chat', icon: MessageSquare },
+    { label: 'Knowledge Base', path: '/admin/knowledge-base', icon: Database },
     { label: 'NGOs', path: '/dashboard/gov', icon: Building2 },
     { label: 'Schemes', path: '/schemes', icon: Globe },
     { label: 'Analytics', path: '/analytics', icon: BarChart3 },
-    { label: 'Admin', path: '/profile', icon: Shield },
   ],
 };
 
@@ -81,7 +81,8 @@ const keyMap = {
   'Portal': 'sidebar.portal',
   'Browse Schemes': 'sidebar.browse_schemes',
   'Overview': 'sidebar.overview',
-  'Admin': 'sidebar.admin'
+  'Admin': 'sidebar.admin',
+  'Knowledge Base': 'sidebar.knowledge_base'
 };
 
 const roleColors = {

@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-from app.routes import chat, document, proposal
+from app.routes import chat, document, proposal, knowledge
 
 app = FastAPI(
     title="SevaAI - AI Service",
@@ -30,6 +30,7 @@ app.add_middleware(
 app.include_router(chat.router, prefix="/api/chat", tags=["Chat"])
 app.include_router(document.router, prefix="/api/document", tags=["Document"])
 app.include_router(proposal.router, prefix="/api/proposal", tags=["Proposal"])
+app.include_router(knowledge.router, prefix="/api/knowledge", tags=["Knowledge"])
 
 
 @app.get("/")

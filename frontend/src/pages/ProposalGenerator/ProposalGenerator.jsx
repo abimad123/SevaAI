@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { generateProposal, clearProposal } from '../../store/slices/chatSlice';
-import { Lightbulb, Sparkles, Download, Copy, RefreshCw, CheckCircle, MapPin, Users, Calendar, IndianRupee, Target, FileText } from 'lucide-react';
+import { generateProposal, clearProposal, fetchProposalHistory, fetchProposalById } from '../../store/slices/chatSlice';
+import { Lightbulb, Sparkles, Copy, RefreshCw, CheckCircle, MapPin, Users, Calendar, IndianRupee, Target, FileText } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
@@ -10,10 +10,28 @@ const FOCUS_AREAS = ['Education', 'Health', 'Women Empowerment', 'Rural Developm
 
 export default function ProposalGenerator() {
   const dispatch = useDispatch();
-  const { proposal, proposalLoading } = useSelector((s) => s.chat);
+  const { proposal, proposalLoading, proposalHistory } = useSelector((s) => s.chat);
   const [form, setForm] = useState({ projectName: '', location: '', budget: '', targetGroup: '', duration: '', description: '', focusArea: '' });
   const [activeTab, setActiveTab] = useState('summary');
   const { t } = useTranslation();
+
+  useEffect(() => {
+    dispatch(fetchProposalHistory());
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (proposal) {
+      setForm({
+        projectName: proposal.projectName || proposal.title || '',
+        location: proposal.location || '',
+        budget: proposal.budget || '',
+        targetGroup: proposal.targetGroup || '',
+        duration: proposal.duration || '',
+        description: proposal.description || '',
+        focusArea: proposal.focusArea || ''
+      });
+    }
+  }, [proposal]);
 
   const set = (k, v) => setForm((f) => ({ ...f, [k]: v }));
 
@@ -28,19 +46,9 @@ export default function ProposalGenerator() {
   };
 
   const handleCopy = () => {
-    const text = proposal?.proposal_text || Object.entries(proposal || {}).filter(([k]) => k !== 'title').map(([k, v]) => `## ${k.replace(/_/g, ' ').toUpperCase()}\n${Array.isArray(v) ? v.join('\n- ') : v}`).join('\n\n');
+    const text = proposal?.proposal_text || Object.entries(proposal || {}).filter(([k]) => k !== 'title' && k !== 'sources').map(([k, v]) => `## ${k.replace(/_/g, ' ').toUpperCase()}\n${Array.isArray(v) ? v.join('\n- ') : v}`).join('\n\n');
     navigator.clipboard.writeText(text);
     toast.success('Proposal copied to clipboard!');
-  };
-
-  const handleDownload = () => {
-    const text = proposal?.proposal_text || 'Proposal content';
-    const blob = new Blob([text], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${form.projectName || 'proposal'}_SevaAI.txt`;
-    a.click();
   };
 
   const tabs = [
@@ -147,6 +155,27 @@ export default function ProposalGenerator() {
             </div>
           </form>
 
+          {proposalHistory && proposalHistory.length > 0 && (
+            <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm mt-4">
+              <h3 className="text-xs font-bold text-slate-400 uppercase mb-2">Past Proposals</h3>
+              <select
+                onChange={(e) => {
+                  if (e.target.value) {
+                    dispatch(fetchProposalById(e.target.value));
+                  }
+                }}
+                className="w-full text-sm font-semibold px-3 py-2 border border-slate-300 rounded-xl focus:border-blue-600 focus:ring-1 focus:ring-blue-600 focus:outline-none bg-white text-slate-900 cursor-pointer"
+              >
+                <option value="">Select a past proposal...</option>
+                {proposalHistory.map((p) => (
+                  <option key={p._id} value={p._id}>
+                    {p.title} ({p.focusArea || 'General'})
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+
           <div className="bg-amber-50 border border-amber-100 rounded-xl p-4 mt-4 shadow-sm">
             <p className="text-sm font-bold text-amber-800 mb-2 flex items-center gap-1.5"><Lightbulb className="w-4 h-4" /> {t('proposal.tips_title')}</p>
             <ul className="space-y-1 text-xs text-slate-600 font-semibold">
@@ -200,7 +229,61 @@ export default function ProposalGenerator() {
                 </div>
                 <div className="flex gap-2">
                   <button onClick={handleCopy} className="btn-secondary text-sm py-2 px-3"><Copy className="w-4 h-4" /></button>
-                  <button onClick={handleDownload} className="btn-secondary text-sm py-2 px-3"><Download className="w-4 h-4" /></button>
+                  <select
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      if (val === 'markdown') {
+                        const text = proposal?.proposal_text || '';
+                        const blob = new Blob([text], { type: 'text/markdown' });
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = `${form.projectName || 'proposal'}_SevaAI.md`;
+                        a.click();
+                      } else if (val === 'docx') {
+                        const text = proposal?.proposal_text || '';
+                        const blob = new Blob([text], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = `${form.projectName || 'proposal'}_SevaAI.docx`;
+                        a.click();
+                      } else if (val === 'pdf') {
+                        const printWindow = window.open('', '_blank');
+                        printWindow.document.write(`
+                          <html>
+                            <head>
+                              <title>${proposal?.title || 'Project Proposal'}</title>
+                              <style>
+                                body { font-family: sans-serif; line-height: 1.6; padding: 40px; color: #333; }
+                                h1, h2, h3 { color: #1e3a8a; }
+                                pre { white-space: pre-wrap; }
+                              </style>
+                            </head>
+                            <body>
+                              <h1>${proposal?.title || 'Project Proposal'}</h1>
+                              <hr />
+                              <pre>${proposal?.proposal_text || 'No content'}</pre>
+                              <script>
+                                window.onload = function() {
+                                  window.print();
+                                  window.close();
+                                };
+                              </script>
+                            </body>
+                          </html>
+                        `);
+                        printWindow.document.close();
+                      }
+                      e.target.value = '';
+                    }}
+                    className="btn-secondary text-xs py-2 px-2 focus:outline-none bg-white font-semibold cursor-pointer"
+                  >
+                    <option value="">📥 Export</option>
+                    <option value="markdown">Markdown (.md)</option>
+                    <option value="docx">Word (.docx)</option>
+                    <option value="pdf">PDF (.pdf)</option>
+                  </select>
                 </div>
               </div>
 
@@ -241,8 +324,24 @@ export default function ProposalGenerator() {
                   </div>
                 )}
                 {activeTab === 'full' && (
-                  <div className="prose prose-slate prose-sm max-w-none text-slate-700 font-medium">
-                    <ReactMarkdown>{proposal.proposal_text || 'Full proposal text not available.'}</ReactMarkdown>
+                  <div className="space-y-4">
+                    <div className="prose prose-slate prose-sm max-w-none text-slate-700 font-medium">
+                      <ReactMarkdown>{proposal.proposal_text || 'Full proposal text not available.'}</ReactMarkdown>
+                    </div>
+                    {proposal.sources && proposal.sources.length > 0 && (
+                      <div className="border-t border-slate-200 pt-4 mt-4">
+                        <p className="text-xs text-slate-500 font-bold mb-2">Grounding Sources ({proposal.sources.length})</p>
+                        <div className="flex flex-wrap gap-1.5">
+                          {proposal.sources.map((src, idx) => (
+                            <div key={idx} className="px-2.5 py-1 rounded-full bg-blue-50 border border-blue-100 text-xs text-blue-700 font-semibold flex items-center gap-1">
+                              <span>📄</span>
+                              <span className="max-w-48 truncate">{src.title || src.source}</span>
+                              <span className="text-blue-500 font-bold">{Math.round((src.relevanceScore || 0.8) * 100)}%</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>

@@ -14,7 +14,9 @@
     "pending": "Pending",
     "rejected": "Rejected",
     "completed": "Completed",
-    "refresh": "Refresh"
+    "refresh": "Refresh",
+    "copy": "Copy",
+    "regenerate": "Regenerate"
   },
   "nav": {
     "notifications": "Notifications",
@@ -47,6 +49,7 @@
     "browse_schemes": "Browse Schemes",
     "overview": "Overview",
     "admin": "Admin",
+    "knowledge_base": "Knowledge Base",
     "profile_settings": "Profile & Settings",
     "logout": "Logout"
   },
